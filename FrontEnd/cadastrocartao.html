@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro do Cartão</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        input[type="text"], input[type="text"], input[type="text"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: block;
+            margin: 10px auto;
+        }
+        select {
+            margin-top: 0;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-group select, .form-group input {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+    <form id="cadastroForm" action="/cadastrarcard" method="post">
+        <h2>Cadastro do Cartão</h2>
+        <div class="form-group">
+            <input type="text" name="CPF" oninput="this.value = this.value.replace(/[^0-9]/g, '');" placeholder="CPF" required>
+            <input type="text" name="numerocs" placeholder="Número do CadSaúde" required>
+        </div>
+
+    </form>
+</body>
+</html>
