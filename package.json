@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1",
+    "serialport": "^12.0.0"
+  }
+}
