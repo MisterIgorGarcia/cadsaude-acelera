@@ -21,6 +21,19 @@ connection.connect((err) => {
   console.log('Conexão com o banco de dados MySQL estabelecida com sucesso');
 });
 
+// Listar as portas seriais disponíveis
+SerialPort.SerialPort.list().then(ports => {
+  console.log('Portas seriais disponíveis:');
+  ports.forEach(port => {
+    console.log('- Caminho:', port.path);
+    console.log('- Fabricante:', port.manufacturer);
+    console.log('- ID do Produto:', port.productId);
+    console.log('-------------------------');
+  });
+}).catch(err => {
+  console.error('Erro ao listar portas seriais:', err);
+});
+
 // Configura a porta serial
 const port = new SerialPort.SerialPort({
   path: 'COM4', ///dev/ttyACM0 <--- para linux
@@ -33,17 +46,21 @@ const parser = port.pipe(new Readline.ReadlineParser({ delimiter: '\r\n' }));
 // Evento disparado quando a porta é aberta com sucesso
 port.on('open', () => {
   console.log('Porta serial aberta.');
+  console.log('-------------------------');
 });
  
 // Evento disparado em caso de erro na comunicação
 port.on('error', (err) => {
   console.error('Erro: ', err.message);
+  console.log('-------------------------');
 });
  
 // Evento disparado quando dados são recebidos pela porta serial
 parser.on('data', (data) => {
   console.log('Dados recebidos:', data);
+  console.log('-------------------------');
 });
+
 // Inicializando o servidor Express
 const app = express();
 const portNumber = 3000;
@@ -57,15 +74,19 @@ app.post('/api/leitura', (req, res) => {
       if (err) {
         console.error('Erro ao inserir os dados no banco de dados:', err);
         res.status(500).send('Erro interno do servidor');
+        console.log('-------------------------');
         return;
       }
       console.log('Dados inseridos com sucesso no banco de dados:', result);
       res.status(200).send('Dados inseridos com sucesso no banco de dados');
+      console.log('-------------------------');
     });
   });
 });
 
 // Iniciando o servidor
 app.listen(portNumber, () => {
-  console.log(`Servidor ouvindo na porta ${portNumber}`);
+  console.log('-//Bem vindo ao servidor node do CadSaude//-');
+  console.log(`--> Servidor ouvindo na porta : ${portNumber}`);
+  console.log('---//-------------------------//---');
 });
