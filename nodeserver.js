@@ -1,4 +1,4 @@
-// Importando as bibliotecas necessárias
+// Importando as bibliotecas necessárias.
 const mysql = require('mysql');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
@@ -26,11 +26,11 @@ connection.connect((err) => {
   console.log('Tentando se conectar com o banco de dados...')
   if (err) {
     console.error('Erro ao conectar ao banco de dados:', err);
-    console.log('-------------------------');
+    console.log('---------------------------');
     throw err;
   }
   console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
-  console.log('-------------------------');
+  console.log('---------------------------');
 });
 
 // Listar as portas seriais disponíveis
