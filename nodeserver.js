@@ -74,10 +74,10 @@ parser.on('data', (data) => {
 });
 
 // Configurando o endpoint para receber os dados da porta serial
-app.post('/api/leitura', (req, res) => {
-  parser.on('data', async (data) => {
+app.post('/api/uid', (req, res) => {
+  parser.on('data', async (conteudo) => {
     // Salvando os dados no banco de dados
-    const query = `INSERT INTO leituras (conteudo) VALUES ('${data}')`;
+    const query = `INSERT INTO uid (conteudo) VALUES ('${data}')`;
 
     connection.query(query, (err, result) => {
       if (err) {
@@ -94,7 +94,7 @@ app.post('/api/leitura', (req, res) => {
 });
 
 // Endpoint para receber dados do formulário de Pacientes
-app.post('/api/pacientes', (req, res) => {
+app.post('/api/paciente', (req, res) => {
   const { nome, cpf, email, endereco, cidade, estado } = req.body;
   const query = `INSERT INTO pacientes (nome, cpf, email, endereco, cidade, estado) VALUES
    ('${nome}', '${cpf}', '${email}', '${endereco}', '${cidade}', '${estado}')`;
@@ -113,7 +113,7 @@ app.post('/api/pacientes', (req, res) => {
 });
 
 // Endpoint para receber dados do formulário de Fichas Médicas
-app.post('/api/fichas', (req, res) => {
+app.post('/api/ficha', (req, res) => {
   const { cpf, data, hora, sintomas, alergias, registros, notas } = req.body;
   const query = `INSERT INTO fichas_medicas (cpf, data_emissao, hora_emissao, sintomas, alergias, 
     registros_anteriores, notas_medicas) VALUES ('${cpf}', '${data}', '${hora}', 
