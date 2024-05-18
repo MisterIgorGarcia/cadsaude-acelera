@@ -29,7 +29,7 @@ void loop() {
   }
   
   // Mostra UID na serial
-  Serial.print("UID da tag: ");
+  Serial.print("UID: ");
   String conteudo = "";
 
   for (byte i = 0; i < rfid.uid.size; i++) {
