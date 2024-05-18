@@ -64,9 +64,23 @@
       width: 100%; /* Ajusta a largura dos campos para caberem lado a lado */
     }
   </style>
+<script>
+  window.onload = function() {
+       // Adiciona um ouvinte de evento ao campo CPF
+       document.getElementById('cpf').addEventListener('input', function (event) {
+         // Remove caracteres não numéricos
+         this.value = this.value.replace(/\D/g, '');
+ 
+         // Limita a entrada a 11 dígitos
+         if (this.value.length > 11) {
+           this.value = this.value.slice(0, 11);
+         }
+       });
+     };
+   </script>
 </head>
 <body>
-  <form action="create.php" method="post">
+  <form action="/api/pacientes" method="post">
     <h2>Cadastro de Pacientes</h2>
     <div class="form-group">
       <label for="nome">Nome:</label>
