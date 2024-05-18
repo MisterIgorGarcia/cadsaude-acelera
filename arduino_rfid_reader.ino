@@ -1,16 +1,19 @@
+//Importação das bibliotecas necessárias
 #include <MFRC522.h>
 #include <SPI.h>
 
-#define PINO_RST 49
-#define PINO_SDA 53
+//Define os pinos de conecção
+#define PINO_RST 49 //Pino reset 49
+#define PINO_SDA 53 //Pino Serial 53
 
+//Inicializa a biblioteca com os pinos associados a ela
 MFRC522 rfid(PINO_SDA, PINO_RST);
 
+//Configura a placa e seus periféricos
 void setup() {
   Serial.begin(9600);
   SPI.begin();
-  rfid.PCD_Init();
-  
+  rfid.PCD_Init();  
   Serial.println("Aproxime a sua tag...");
   Serial.println();
 }
