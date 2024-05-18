@@ -7,7 +7,7 @@
 Um sistema de cadastro e leitura de pacientes e formulários médicos por meio de um cartão RFID contendo todas as informações do paciente.
 
 ## Dependencias:
-**nodeserver.js :** bibliotecas Serialport, Serialport parser readline, MySql e Express
-para baixa-las digite no terminal dentro da pasta do projeto: *npm install serialport @serialport/parser-readline mysql express*
+**nodeserver.js :** bibliotecas Serialport, Serialport parser readline, MySql, Body-Parser e Express
+para baixa-las digite no terminal dentro da pasta do projeto: *npm install serialport @serialport/parser-readline mysql express body-parser*
 
 ### Integrantes : Amaury, Igor, Matheus
