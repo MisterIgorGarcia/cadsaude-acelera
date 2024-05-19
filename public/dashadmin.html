@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard do Administrador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
+      background-color: #fff;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .icon {
+      margin-right: 5px;
+    }
+    footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Bem-vindo, <span id="adminName"></span>!</h2>
+  <button id="cadastroAdmin">Cadastrar Novo Administrador</button>
+  <button id="cadastroUsuario">Cadastrar Novo Usuário Comum</button>
+</div>
+
+<footer>
+  <p id="loginTime"></p>
+</footer>
+
+<script>
+  // Extrair o nome do administrador da URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const adminName = urlParams.get('admin');
+
+  // Exibir o nome do administrador no elemento de mensagem de boas-vindas
+  document.getElementById('adminName').textContent = adminName;
+
+  // Adicionar eventos de clique aos botões
+  document.getElementById('cadastroAdmin').addEventListener('click', function() {
+    window.location.href = '/public/cadadmin.html';
+  });
+
+  document.getElementById('cadastroUsuario').addEventListener('click', function() {
+    window.location.href = '/public/caduser.html';
+  });
+
+  // Calcular e exibir o tempo logado
+  const loginTime = new Date();
+  document.getElementById('loginTime').textContent = 'Logado desde: ' + loginTime.toLocaleTimeString();
+</script>
+
+</body>
+</html>

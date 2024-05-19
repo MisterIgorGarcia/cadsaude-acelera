@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Usuário</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Cadastro de Usuário</h2>
+<form id="userForm">
+  <input type="text" name="username" placeholder="Nome de Usuário" required>
+  <input type="password" name="password" placeholder="Senha" required>
+  <input type="submit" value="Cadastrar Usuário">
+</form>
+
+<script>
+  document.getElementById('userForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const username = document.querySelector('input[name="username"]').value;
+    const password = document.querySelector('input[name="password"]').value;
+    const data = { username, password };
+    fetch('/public/caduser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert(data);
+    })
+    .catch(error => {
+      console.error('Erro:', error);
+    });
+  });
+</script>
+</body>
+</html>

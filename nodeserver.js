@@ -5,6 +5,8 @@ const Readline = require('@serialport/parser-readline');
 const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
 
 // Inicializando e configurando o servidor Express
 const app = express();
@@ -21,6 +23,9 @@ const connection = mysql.createConnection({
 // Configuração do bodyParser para processar formulários
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Servindo arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurando o servidor para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -96,6 +101,135 @@ app.post('/api/uid', (req, res) => {
     });
   });
 });
+
+//----------------------- Módulo de Login Inicio --------------------------//
+
+// Endpoint para login de administrador
+app.post('/public/loginadmin', async (req, res) => {
+  const { username, password } = req.body;
+  // Verifique as credenciais do administrador no banco de dados
+  const query = `SELECT * FROM admin WHERE username = ?`;
+
+  connection.query(query, [username], async (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar usuário:', err);
+      return res.status(500).send('Erro interno do servidor');
+    }
+    if (results.length === 0) {
+      return res.status(401).send('Usuário não encontrado');
+    }
+
+    // Verifique se a senha está correta usando bcrypt
+    const admin = results[0];
+    const validPassword = await bcrypt.compare(password, admin.password);
+    if (validPassword) {
+      // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
+      res.redirect(`/dashboardadm?admin=${username}`);
+    } else {
+      res.status(401).send('Senha incorreta');
+    }
+  });
+});
+// Rota para o dashboard após o login do administrador
+app.get('/dashboardadm', (req, res) => {
+  // Renderize o arquivo HTML do dashboard ou envie uma resposta adequada
+  res.sendFile(path.join(__dirname, 'public/dashadmin.html'));
+});
+
+// Endpoint para login de usuário comum
+app.post('/public/loginuser', async (req, res) => {
+  const { username, password } = req.body;
+  // Verifique as credenciais do usuário comum no banco de dados
+  const query = `SELECT * FROM users WHERE username = ?`;
+
+  connection.query(query, [username], async (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar usuário:', err);
+      return res.status(500).send('Erro interno do servidor');
+    }
+    if (results.length === 0) {
+      return res.status(401).send('Usuário não encontrado');
+    }
+
+    // Verifique se a senha está correta usando bcrypt
+    const user = results[0];
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (validPassword) {
+      // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
+      res.status(200).send('Login de usuário comum bem-sucedido');
+    } else {
+      res.status(401).send('Senha incorreta');
+    }
+  });
+});
+
+//----------------------- Módulo de Login Fim --------------------------//
+
+//----------------------- Módulo do Cadastro de Usuários Inicio--------------------------//
+
+// Endpoint para cadastrar usuário comum
+app.post('/public/caduser', async (req, res) => {
+  const { username, password } = req.body;
+  // Verifique se todos os campos necessários estão presentes
+  if (!username || !password) {
+    return res.status(400).send('Nome de usuário e senha são obrigatórios.');
+  }
+  // Verifique se o nome de usuário já está em uso
+  const checkQuery = `SELECT * FROM users WHERE username = ?`;
+  connection.query(checkQuery, [username], async (err, results) => {
+    if (err) {
+      console.error('Erro ao verificar usuário:', err);
+      return res.status(500).send('Erro interno do servidor');
+    }
+    if (results.length > 0) {
+      return res.status(400).send('Nome de usuário já em uso.');
+    }
+    // Crie um hash da senha
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Insira o usuário no banco de dados
+    const insertQuery = `INSERT INTO users (username, password) VALUES (?, ?)`;
+    connection.query(insertQuery, [username, hashedPassword], (err, result) => {
+      if (err) {
+        console.error('Erro ao cadastrar usuário:', err);
+        return res.status(500).send('Erro interno do servidor');
+      }
+      res.status(200).send('Usuário cadastrado com sucesso.');
+    });
+  });
+});
+
+// Endpoint para cadastrar usuário administrador
+app.post('/public/cadadmin', async (req, res) => {
+  const { username, password } = req.body;
+  // Verifique se todos os campos necessários estão presentes
+  if (!username || !password) {
+    return res.status(400).send('Nome de usuário e senha são obrigatórios.');
+  }
+  // Verifique se o nome de usuário já está em uso
+  const checkQuery = `SELECT * FROM admin WHERE username = ?`;
+  connection.query(checkQuery, [username], async (err, results) => {
+    if (err) {
+      console.error('Erro ao verificar usuário:', err);
+      return res.status(500).send('Erro interno do servidor');
+    }
+    if (results.length > 0) {
+      return res.status(400).send('Nome de usuário já em uso.');
+    }
+    // Crie um hash da senha
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Insira o usuário no banco de dados
+    const insertQuery = `INSERT INTO admin (username, password) VALUES (?, ?)`;
+    connection.query(insertQuery, [username, hashedPassword], (err, result) => {
+      if (err) {
+        console.error('Erro ao cadastrar usuário administrador:', err);
+        return res.status(500).send('Erro interno do servidor');
+      }
+      res.status(200).send('Usuário administrador cadastrado com sucesso.');
+    });
+  });
+});
+
+//----------------------- Módulo do Cadastro de Usuários Fim--------------------------//
 
 // Endpoint para receber dados do formulário de Pacientes
 app.post('/api/paciente', (req, res) => {
