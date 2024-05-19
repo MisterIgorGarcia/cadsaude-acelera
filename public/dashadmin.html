@@ -38,9 +38,13 @@
       left: 0;
       bottom: 0;
       width: 100%;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
       padding: 10px;
       background-color: #f0f8ff;
+    }
+    footer p:last-child {
+      margin-left: 80%;
     }
   </style>
 </head>
@@ -48,12 +52,14 @@
 
 <div class="container">
   <h2>Bem-vindo, <span id="adminName"></span>!</h2>
-  <button id="cadastroAdmin">Cadastrar Novo Administrador</button>
-  <button id="cadastroUsuario">Cadastrar Novo Usuário Comum</button>
+  <button id="cadastroAdmin">Cadastrar um novo administrador</button>
+  <button id="cadastroUsuario">Cadastrar um novo usuário comum</button>
+  <button id="apagarAdmin">Apagar um usuário do sistema</button>
 </div>
 
 <footer>
   <p id="loginTime"></p>
+  <p>Conta de Administração</p>
 </footer>
 
 <script>
@@ -66,12 +72,16 @@
 
   // Adicionar eventos de clique aos botões
   document.getElementById('cadastroAdmin').addEventListener('click', function() {
-    window.location.href = '/public/cadadmin.html';
+    window.location.href = '/cadadmin.html';
   });
 
   document.getElementById('cadastroUsuario').addEventListener('click', function() {
-    window.location.href = '/public/caduser.html';
+    window.location.href = '/caduser.html';
   });
+
+  document.getElementById('apagarAdmin').addEventListener('click', function() {
+  window.location.href = '/deletarusuario.html';
+});
 
   // Calcular e exibir o tempo logado
   const loginTime = new Date();

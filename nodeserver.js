@@ -103,7 +103,6 @@ app.post('/api/uid', (req, res) => {
 });
 
 //----------------------- Módulo de Login Inicio --------------------------//
-
 // Endpoint para login de administrador
 app.post('/public/loginadmin', async (req, res) => {
   const { username, password } = req.body;
@@ -162,11 +161,9 @@ app.post('/public/loginuser', async (req, res) => {
     }
   });
 });
-
 //----------------------- Módulo de Login Fim --------------------------//
 
 //----------------------- Módulo do Cadastro de Usuários Inicio--------------------------//
-
 // Endpoint para cadastrar usuário comum
 app.post('/public/caduser', async (req, res) => {
   const { username, password } = req.body;
@@ -193,6 +190,7 @@ app.post('/public/caduser', async (req, res) => {
         console.error('Erro ao cadastrar usuário:', err);
         return res.status(500).send('Erro interno do servidor');
       }
+      console.log(`Usuário ${username} cadastrado com sucesso.`);
       res.status(200).send('Usuário cadastrado com sucesso.');
     });
   });
@@ -224,12 +222,70 @@ app.post('/public/cadadmin', async (req, res) => {
         console.error('Erro ao cadastrar usuário administrador:', err);
         return res.status(500).send('Erro interno do servidor');
       }
+      console.log(`Usuário administrador ${username} cadastrado com sucesso.`);
       res.status(200).send('Usuário administrador cadastrado com sucesso.');
     });
   });
 });
-
 //----------------------- Módulo do Cadastro de Usuários Fim--------------------------//
+
+//----------------------- Módulo de Deletar Inicio--------------------------//
+//Busca administradores e lista eles para deletar
+app.get('/api/listaradmins', (req, res) => {
+  const sqlSelect = "SELECT * FROM admin";
+  connection.query(sqlSelect, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Erro ao buscar os administradores.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+//Busca usuarios comuns e lista eles para deletar
+app.get('/api/listarusers', (req, res) => {
+  const sqlSelect = "SELECT * FROM users";
+  connection.query(sqlSelect, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Erro ao buscar os usuários.' });
+    } else {
+      res.json(result);
+    }
+  });
+});
+//Deleta um administrador
+app.delete('/api/listaradmins/:id', (req, res) => {
+  const protectedAdminId = '1'; //Achava que podia simplesmente deletar o mestre do sistema ?
+  if (req.params.id === protectedAdminId) {
+    res.json({ message: 'Ninguém simplesmente apaga o mestre supremo do sistema...' });
+    return;
+  }
+  const sqlDelete = "DELETE FROM admin WHERE id = ?";
+  connection.query(sqlDelete, [req.params.id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Erro ao deletar o administrador.' });
+    } else {
+      console.log(`Administrador com ID ${req.params.id} foi deletado.`);
+      res.json({ message: 'Administrador deletado com sucesso.' });
+    }
+  });
+});
+//Deleta um usuário comum
+app.delete('/api/listarusers/:id', (req, res) => {
+  const sqlDelete = "DELETE FROM users WHERE id = ?";
+  connection.query(sqlDelete, [req.params.id], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Erro ao deletar o usuário.' });
+    } else {
+      console.log(`Usuário com ID ${req.params.id} foi deletado.`);
+      res.json({ message: 'Usuário deletado com sucesso.' });
+    }
+  });
+});
+//----------------------- Módulo de Deletar fim--------------------------//
 
 // Endpoint para receber dados do formulário de Pacientes
 app.post('/api/paciente', (req, res) => {
@@ -272,8 +328,12 @@ app.post('/api/ficha', (req, res) => {
 
 // Iniciando o servidor
 console.log('---// Seja bem vindo ao servidor do CadSaude //---');
+// Registra a data e a hora do início do servidor
+console.log('-------------------------------');
 console.log('Tentando ouvir servidor...')
 app.listen(portNumber, () => {
   console.log(`Servidor ouvindo na porta : ${portNumber}`);
+  const serverStartupTime = new Date();
+  console.log(`O servidor Node.js foi iniciado em ${serverStartupTime}`);
   console.log('-------------------------------');
 });

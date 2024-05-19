@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Apagar Administrador e Usuário</title>
+</head>
+<body>
+  <h1>Administradores:</h1>
+  <div id="adminList"></div>
+
+  <h1>Usuários:</h1>
+  <div id="userList"></div>
+
+  <script>
+    function loadAdmins() {
+      const adminList = document.getElementById('adminList');
+      adminList.innerHTML = ''; // Limpa a lista de administradores
+      fetch('/api/listaradmins')
+        .then(response => response.json())
+        .then(admins => {
+          admins.forEach(admin => {
+            const button = document.createElement('button');
+            button.textContent = `Apagar ${admin.username}`;
+            button.addEventListener('click', function() {
+              fetch(`/api/listaradmins/${admin.id}`, {
+                method: 'DELETE',
+              })
+              .then(response => response.json())
+              .then(data => {
+                alert(data.message);
+                loadAdmins(); // Recarrega a lista de administradores
+                loadUsers(); // Recarrega a lista de usuários
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+            });
+            adminList.appendChild(button);
+          });
+        });
+    }
+
+    function loadUsers() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = ''; // Limpa a lista de usuários
+      fetch('/api/listarusers')
+        .then(response => response.json())
+        .then(users => {
+          users.forEach(user => {
+            const button = document.createElement('button');
+            button.textContent = `Apagar ${user.username}`;
+            button.addEventListener('click', function() {
+              fetch(`/api/listarusers/${user.id}`, {
+                method: 'DELETE',
+              })
+              .then(response => response.json())
+              .then(data => {
+                alert(data.message);
+                loadAdmins(); // Recarrega a lista de administradores
+                loadUsers(); // Recarrega a lista de usuários
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+            });
+            userList.appendChild(button);
+          });
+        });
+    }
+
+    loadAdmins(); // Carrega a lista de administradores na inicialização
+    loadUsers(); // Carrega a lista de usuários na inicialização
+  </script>
+</body>
+</html>
