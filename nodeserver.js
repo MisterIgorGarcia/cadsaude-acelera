@@ -4,6 +4,7 @@ const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 const bodyParser = require('body-parser');
 const express = require('express');
+const path = require('path');
 
 // Inicializando e configurando o servidor Express
 const app = express();
@@ -20,6 +21,9 @@ const connection = mysql.createConnection({
 // Configuração do bodyParser para processar formulários
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Configurando o servidor para servir arquivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Conectando ao banco de dados
 connection.connect((err) => {
