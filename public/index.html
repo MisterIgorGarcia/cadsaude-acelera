@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+    integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMgK7yHGl/X5rpXzJlfVh5W8y0Th5lxzR4m6gi0" 
+    crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: block;
+            margin: 10px auto;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-group select, .form-group input {
+            width: 48%;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-width: 150px;
+        }
+        .login-option {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid rgba(0, 123, 255, 0.5);
+            border-radius: 3px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+        }
+        .login-option i {
+            margin-right: 10px;
+        }
+        .login-option:hover {
+            background-color: rgba(0, 123, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="cadsaude_logo.png" alt="CadSaúde">
+        <h2>CadSaúde</h2>
+    </div>
+    <div id="loginOptions">
+        <div class="login-option" onclick="location.href='admin_login.html';">
+            <img src="admin_icon.png" alt="Admin Icon" style="width: 20px; height: 20px; margin-right: 10px;">
+            <h2>Login do Administrador</h2>
+        </div>
+        <div class="login-option" onclick="location.href='user_login.html';">
+            <img src="user_icon.png" alt="User Icon" style="width: 20px; height: 20px; margin-right: 10px;">
+            <h2>Login Comum</h2>
+        </div>
+    </div>
+    <footer>
+        <p>Nota: Por favor, use suas credenciais corretamente para acessar o sistema.</p>
+    </footer>
+</body>
+</html>
