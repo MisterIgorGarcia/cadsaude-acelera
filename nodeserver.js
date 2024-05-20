@@ -3,9 +3,10 @@ const mysql = require('mysql');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 const bodyParser = require('body-parser');
-const express = require('express');
 const path = require('path');
+const express = require('express');
 const session = require('express-session');
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
 // Inicializando e configurando o servidor Express
@@ -19,6 +20,16 @@ const connection = mysql.createConnection({
   password: '',
   database: 'cadsaude'
 });
+
+//Configura a sessão express com o segredo de sessão
+const secret = crypto.randomBytes(64).toString('hex');
+app.use(session({
+  secret: secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Defina como true se estiver em um ambiente de produção com HTTPS
+}));
+//
 
 // Configuração do bodyParser para processar formulários
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -122,6 +133,7 @@ app.post('/public/loginadmin', async (req, res) => {
     const admin = results[0];
     const validPassword = await bcrypt.compare(password, admin.password);
     if (validPassword) {
+      req.session.username = username; // armazene o nome de usuário na sessão
       // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
       res.redirect(`/dashboardadm?admin=${username}`);
     } else {
@@ -154,6 +166,7 @@ app.post('/public/loginuser', async (req, res) => {
     const user = results[0];
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
+      req.session.username = username; // armazene o nome de usuário na sessão
       // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
       res.status(200).send('Login de usuário comum bem-sucedido');
     } else {
@@ -161,9 +174,9 @@ app.post('/public/loginuser', async (req, res) => {
     }
   });
 });
-//----------------------- Módulo de Login Fim --------------------------//
+//----------------------- Módulo de Login fim --------------------------//
 
-//----------------------- Módulo do Cadastro de Usuários Inicio--------------------------//
+//----------------------- Módulo do Cadastro de Usuários inicio--------------------------//
 // Endpoint para cadastrar usuário comum
 app.post('/public/caduser', async (req, res) => {
   const { username, password } = req.body;
@@ -227,9 +240,9 @@ app.post('/public/cadadmin', async (req, res) => {
     });
   });
 });
-//----------------------- Módulo do Cadastro de Usuários Fim--------------------------//
+//----------------------- Módulo do Cadastro de Usuários fim--------------------------//
 
-//----------------------- Módulo de Deletar Inicio--------------------------//
+//----------------------- Módulo de Deletar inicio--------------------------//
 //Busca administradores e lista eles para deletar
 app.get('/api/listaradmins', (req, res) => {
   const sqlSelect = "SELECT * FROM admin";
@@ -287,6 +300,43 @@ app.delete('/api/listarusers/:id', (req, res) => {
 });
 //----------------------- Módulo de Deletar fim--------------------------//
 
+
+//----------------------- Módulo para Dashboards inicio ----------------//
+//Função para mostrar o ID logado no canto da tela.
+app.get('/getAdminId', function(req, res) {
+  const adminName = req.query.admin; // Obter o nome do administrador da URL
+
+  // Consulta para obter a ID do administrador
+  connection.query('SELECT id FROM admin WHERE username = ?', [adminName], function(error, results, fields) {
+    if (error) throw error;
+
+    // Enviar a ID do administrador para o front-end
+    res.json({ adminId: results[0].id });
+  });
+});
+
+//Configuração do Gráfico chart.js
+app.get('/grafico', (req, res) => {
+  const tables = ['pacientes', 'users', 'fichas_medicas', 'uid', 'admin'];
+  let results = [];
+  let completedQueries = 0;
+
+  tables.forEach(table => {
+    const query = `SELECT COUNT(*) as count FROM ${table}`;
+    connection.query(query, (err, result) => {
+      if (err) throw err;
+      results.push({ table, count: result[0].count });
+      completedQueries++;
+
+      if (completedQueries === tables.length) {
+        res.json(results);
+      }
+    });
+  });
+});
+
+//--------------------- Módulo para Dashboards fim --------------------//
+
 // Endpoint para receber dados do formulário de Pacientes
 app.post('/api/paciente', (req, res) => {
   const { nome, cpf, email, endereco, cidade, estado } = req.body;
@@ -336,4 +386,7 @@ app.listen(portNumber, () => {
   const serverStartupTime = new Date();
   console.log(`O servidor Node.js foi iniciado em ${serverStartupTime}`);
   console.log('-------------------------------');
+  console.log('Gerando sessão...');
+console.log('Segredo:', secret);
+console.log('-------------------------------');
 });

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column; /* Adicionado para organizar os elementos em uma coluna */
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
@@ -33,7 +33,8 @@
     }
     input[type="text"],
     input[type="password"],
-    input[type="submit"] {
+    input[type="submit"],
+    input[type="button"] {
       width: calc(100% - 20px);
       padding: 10px;
       margin-bottom: 10px;
@@ -51,16 +52,27 @@
     input[type="submit"]:hover {
       background-color: #0056b3;
     }
+    input[type="button"] {
+      background-color: #6c757d;
+      color: #fff;
+      cursor: pointer;
+    }
+    input[type="button"]:hover {
+      background-color: #5a6268;
+    }
   </style>
 </head>
 <body>
 
-<h1>Cadastro de Administrador</h1>
-<form id="userForm">
-  <input type="text" name="username" placeholder="Nome de Usuário" required>
-  <input type="password" name="password" placeholder="Senha" required>
-  <input type="submit" value="Cadastrar Usuário">
-</form>
+<div class="form">
+  <form id="userForm">
+    <h1>Cadastro de Administrador</h1>
+    <input type="text" name="username" placeholder="Nome do usuario administrador" required>
+    <input type="password" name="password" placeholder="Senha" required>
+    <input type="submit" value="Cadastrar Usuário">
+    <input type="button" value="Voltar" id="voltar">
+  </form>
+</div>
 
 <script>
   document.getElementById('userForm').addEventListener('submit', function(event) {
@@ -78,11 +90,16 @@
     .then(response => response.text())
     .then(data => {
       alert(data);
+      sessionStorage.setItem('username', username); // Armazene o nome de usuário do usuário logado em sessionStorage
       window.history.back();
     })
     .catch(error => {
       console.error('Erro:', error);
     });
+  });
+   // Recupere o nome de usuário do usuário logado de sessionStorage
+  document.getElementById('voltar').addEventListener('click', function() {
+    window.history.back();
   });
 </script>
 </body>

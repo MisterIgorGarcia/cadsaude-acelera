@@ -1,74 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apagar Administrador e Usuário</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 1000px;
+      max-height: 1000px;
+      padding: 20px;
+      border-radius: 25px;
+      box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #logout {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    .icon {
+      margin-right: 5px;
+    }
+    footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #f0f8ff;
+    }
+    footer p:last-child {
+      margin-left: 80%;
+    }
+    #adminId {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .chart-container {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    .chart-container h3 {
+      font-size: 0.6em;
+      text-align: center;
+    }
+    #voltar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      box-sizing: border-box;
+      background-color: #28a745;
+      color: #fff;
+      cursor: pointer;
+    }
+    #voltar:hover {
+      background-color: #1e7e34;
+    }
+  </style>
 </head>
 <body>
-  <h1>Administradores:</h1>
+
+<input type="button" value="Voltar" id="voltar">
+
+<div class="container">
+  <h2>Administradores salvos:</h2>
   <div id="adminList"></div>
 
-  <h1>Usuários:</h1>
+  <h2>Usuários salvos:</h2>
   <div id="userList"></div>
+</div>
 
-  <script>
-    function loadAdmins() {
-      const adminList = document.getElementById('adminList');
-      adminList.innerHTML = ''; // Limpa a lista de administradores
-      fetch('/api/listaradmins')
-        .then(response => response.json())
-        .then(admins => {
-          admins.forEach(admin => {
-            const button = document.createElement('button');
-            button.textContent = `Apagar ${admin.username}`;
-            button.addEventListener('click', function() {
-              fetch(`/api/listaradmins/${admin.id}`, {
-                method: 'DELETE',
-              })
-              .then(response => response.json())
-              .then(data => {
-                alert(data.message);
-                loadAdmins(); // Recarrega a lista de administradores
-                loadUsers(); // Recarrega a lista de usuários
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-              });
+<script>
+  function loadAdmins() {
+    const adminList = document.getElementById('adminList');
+    adminList.innerHTML = ''; // Limpa a lista de administradores
+    fetch('/api/listaradmins')
+      .then(response => response.json())
+      .then(admins => {
+        admins.forEach(admin => {
+          const button = document.createElement('button');
+          button.textContent = `Apagar ${admin.username}`;
+          button.addEventListener('click', function() {
+            fetch(`/api/listaradmins/${admin.id}`, {
+              method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+              alert(data.message);
+              loadAdmins(); // Recarrega a lista de administradores
+              loadUsers(); // Recarrega a lista de usuários
+            })
+            .catch((error) => {
+              console.error('Error:', error);
             });
-            adminList.appendChild(button);
           });
+          adminList.appendChild(button);
         });
-    }
+      });
+  }
 
-    function loadUsers() {
-      const userList = document.getElementById('userList');
-      userList.innerHTML = ''; // Limpa a lista de usuários
-      fetch('/api/listarusers')
-        .then(response => response.json())
-        .then(users => {
-          users.forEach(user => {
-            const button = document.createElement('button');
-            button.textContent = `Apagar ${user.username}`;
-            button.addEventListener('click', function() {
-              fetch(`/api/listarusers/${user.id}`, {
-                method: 'DELETE',
-              })
-              .then(response => response.json())
-              .then(data => {
-                alert(data.message);
-                loadAdmins(); // Recarrega a lista de administradores
-                loadUsers(); // Recarrega a lista de usuários
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-              });
+  function loadUsers() {
+    const userList = document.getElementById('userList');
+    userList.innerHTML = ''; // Limpa a lista de usuários
+    fetch('/api/listarusers')
+      .then(response => response.json())
+      .then(users => {
+        users.forEach(user => {
+          const button = document.createElement('button');
+          button.textContent = `Apagar ${user.username}`;
+          button.addEventListener('click', function() {
+            fetch(`/api/listarusers/${user.id}`, {
+              method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+              alert(data.message);
+              loadAdmins(); // Recarrega a lista de administradores
+              loadUsers(); // Recarrega a lista de usuários
+            })
+            .catch((error) => {
+              console.error('Error:', error);
             });
-            userList.appendChild(button);
           });
+          userList.appendChild(button);
         });
-    }
+      });
+  }
+    // Recupere o nome de usuário do usuário logado de sessionStorage
+    document.getElementById('voltar').addEventListener('click', function() {
+    window.history.back();
+  });
 
-    loadAdmins(); // Carrega a lista de administradores na inicialização
-    loadUsers(); // Carrega a lista de usuários na inicialização
-  </script>
+  loadAdmins(); // Carrega a lista de administradores na inicialização
+  loadUsers(); // Carrega a lista de usuários na inicialização
+</script>
 </body>
 </html>

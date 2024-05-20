@@ -4,18 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard do Administrador</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
     .container {
-      max-width: 800px;
-      margin: 0 auto;
+      max-width: 1000px;
+      max-height: 1000px;
       padding: 20px;
-      border-radius: 15px;
+      border-radius: 25px;
       box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
-      background-color: #fff;
+      background-color: #ffffff;
     }
     h2 {
       margin-bottom: 20px;
@@ -29,6 +35,11 @@
       border: none;
       cursor: pointer;
       border-radius: 5px;
+    }
+    #logout {
+      position: absolute;
+      top: 10px;
+      left: 10px;
     }
     .icon {
       margin-right: 5px;
@@ -46,6 +57,20 @@
     footer p:last-child {
       margin-left: 80%;
     }
+    #adminId {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .chart-container {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    .chart-container h3 {
+      font-size: 0.6em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -55,12 +80,20 @@
   <button id="cadastroAdmin">Cadastrar um novo administrador</button>
   <button id="cadastroUsuario">Cadastrar um novo usuário comum</button>
   <button id="apagarAdmin">Apagar um usuário do sistema</button>
+  <div class="chart-container">
+    <canvas id="cadsaudeChart"></canvas>
+    <h3>Composição do banco de dados</h3>
+  </div>
 </div>
+
+<button id="logout">Deslogar</button>
 
 <footer>
   <p id="loginTime"></p>
   <p>Conta de Administração</p>
 </footer>
+
+<p id="adminId"></p>
 
 <script>
   // Extrair o nome do administrador da URL
@@ -69,6 +102,19 @@
 
   // Exibir o nome do administrador no elemento de mensagem de boas-vindas
   document.getElementById('adminName').textContent = adminName;
+
+  // Fazer uma requisição AJAX para obter a ID do administrador
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', '/getAdminId?admin=' + adminName);
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      const adminId = JSON.parse(xhr.responseText).adminId;
+
+      // Exibir a ID do administrador no novo elemento
+      document.getElementById('adminId').textContent = 'ID: ' + adminId;
+    }
+  };
+  xhr.send();
 
   // Adicionar eventos de clique aos botões
   document.getElementById('cadastroAdmin').addEventListener('click', function() {
@@ -80,12 +126,57 @@
   });
 
   document.getElementById('apagarAdmin').addEventListener('click', function() {
-  window.location.href = '/deletarusuario.html';
-});
+    window.location.href = '/deletarusuario.html';
+  });
+
+  document.getElementById('logout').addEventListener('click', function() {
+    window.location.href = '/loginadmin.html';
+  });
 
   // Calcular e exibir o tempo logado
   const loginTime = new Date();
   document.getElementById('loginTime').textContent = 'Logado desde: ' + loginTime.toLocaleTimeString();
+
+let cadsaudeChart; // Declaração da variavel da biblioteca do Chart.js
+
+// Função para buscar dados e atualizar o gráfico
+function atualizarGrafico() {
+  fetch('/grafico')
+    .then(response => response.json())
+    .then(data => {
+      const ctx = document.getElementById('cadsaudeChart').getContext('2d');
+      
+      // Se o gráfico já existe, atualize os dados
+      if (cadsaudeChart) {
+        cadsaudeChart.data.labels = data.map(item => item.table);
+        cadsaudeChart.data.datasets[0].data = data.map(item => item.count);
+        cadsaudeChart.update();
+      } else {
+        // Se o gráfico não existe, crie um novo
+        cadsaudeChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: data.map(item => item.table),
+            datasets: [{
+              data: data.map(item => item.count),
+              backgroundColor: ['lightblue', 'blue', 'gray', 'green', 'purple', 'orange'] // Adicione mais cores se necessário
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            align:'start'
+          }
+        });
+      }
+    });
+}
+
+// Chamar a função uma vez para inicializar o gráfico
+atualizarGrafico();
+
+// Velocidade de atualização automatica do grafico em milisegundos
+setInterval(atualizarGrafico, 5000);
 </script>
 
 </body>
