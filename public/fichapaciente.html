@@ -46,13 +46,35 @@
     button:hover {
       background-color: #0056b3;
     }
+    #backButton {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 5px;
+      margin-top: 5px;
+      width: 80px;
+    }
+    #actionButtons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    #actionButtons button {
+      margin-bottom: 10px;
+    }
+
   </style>
 </head>
 <body>
 
 <div class="container">
   <h2>Ficha do Paciente</h2>
+  <button id="backButton" onclick="window.history.back()">Voltar</button> 
   <div id="fichaPaciente"></div>
+</div>
+<div id="actionButtons">
+  <button onclick="location.href='cadastroficha.html'">Criar Ficha Médica</button>
+  <button onclick="location.href='cadastrorfid.html'">Criar RFID</button>
 </div>
 <script>
   // Função para buscar informações detalhadas de um paciente específico e exibir na página
