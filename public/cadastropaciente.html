@@ -34,7 +34,8 @@
     input[type="text"],
     input[type="email"],
     input[type="submit"],
-    input[type="button"] {
+    input[type="button"],
+    select {
       width: calc(100% - 20px);
       padding: 10px;
       margin-bottom: 10px;
@@ -72,7 +73,36 @@
     <input type="email" id="email" name="email" placeholder="Email" required><br>
     <input type="text" id="endereco" name="endereco" placeholder="Endereço" required><br>
     <input type="text" id="cidade" name="cidade" placeholder="Cidade" required><br>
-    <input type="text" id="estado" name="estado" placeholder="Estado" required><br>
+    <select id="estado" name="estado" required>
+      <option value="">Selecione o estado</option>
+      <option value="AC">Acre</option>
+      <option value="AL">Alagoas</option>
+      <option value="AP">Amapá</option>
+      <option value="AM">Amazonas</option>
+      <option value="BA">Bahia</option>
+      <option value="CE">Ceará</option>
+      <option value="DF">Distrito Federal</option>
+      <option value="ES">Espírito Santo</option>
+      <option value="GO">Goiás</option>
+      <option value="MA">Maranhão</option>
+      <option value="MT">Mato Grosso</option>
+      <option value="MS">Mato Grosso do Sul</option>
+      <option value="MG">Minas Gerais</option>
+      <option value="PA">Pará</option>
+      <option value="PB">Paraíba</option>
+      <option value="PR">Paraná</option>
+      <option value="PE">Pernambuco</option>
+      <option value="PI">Piauí</option>
+      <option value="RJ">Rio de Janeiro</option>
+      <option value="RN">Rio Grande do Norte</option>
+      <option value="RS">Rio Grande do Sul</option>
+      <option value="RO">Rondônia</option>
+      <option value="RR">Roraima</option>
+      <option value="SC">Santa Catarina</option>
+      <option value="SP">São Paulo</option>
+      <option value="SE">Sergipe</option>
+      <option value="TO">Tocantins</option>
+    </select><br>
     <input type="submit" value="Cadastrar">
     <input type="button" value="Voltar" id="voltar">
   </form>
@@ -86,7 +116,7 @@
     const email = document.querySelector('input[name="email"]').value;
     const endereco = document.querySelector('input[name="endereco"]').value;
     const cidade = document.querySelector('input[name="cidade"]').value;
-    const estado = document.querySelector('input[name="estado"]').value;
+    const estado = document.querySelector('select[name="estado"]').value;
     const paciente = { nome, cpf, email, endereco, cidade, estado };
     fetch('http://localhost:3000/api/paciente', {
       method: 'POST',
