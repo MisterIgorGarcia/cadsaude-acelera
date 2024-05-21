@@ -25,8 +25,8 @@
     }
     label {
       display: block;
-      margin-bottom: 0px;
-      font-size: 14px; /* Diminui o tamanho da fonte */
+      margin-bottom: -2px; /* Diminui o espaçamento para 5px */
+      font-size: 13px; /* Diminui o tamanho da fonte */
     }
     input[type="text"], input[type="password"], select, textarea {
       width: calc(100% - 20px); /* Aumenta a largura dos campos */
@@ -63,6 +63,16 @@
     }
     .form-group.dual input, .form-group.dual select {
       width: calc(100% - 10px); /* Ajusta a largura dos campos para caberem lado a lado */
+    }
+    input[type="button"] {
+      width: 100%;
+      background-color: #808080; /* Cor cinza */
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-top: 10px; /* Espaço acima do botão */
     }
   </style>
   <script>
@@ -120,6 +130,7 @@
       <textarea id="notas" name="notas"></textarea>
     </div>
     <input type="submit" value="Cadastrar">
+    <input type="button" value="Voltar" onclick="window.history.back()">
   </form>
 </body>
 </html>

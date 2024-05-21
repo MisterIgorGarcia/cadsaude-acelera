@@ -8,59 +8,53 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      background-color: #f0f0f0;
     }
     .container {
-      max-width: 1000px;
-      max-height: 1000px;
+      width: 30%;
+      background-color: #fff;
       padding: 20px;
-      border-radius: 25px;
-      box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
-      background-color: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     h2 {
-      margin-bottom: 20px;
-      color: #007bff;
+      text-align: center;
     }
     button {
-      padding: 10px 20px;
-      margin-right: 10px;
-      background-color: #28a745;
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      display: block;
+      margin: 5px auto;
+      background-color: #007bff;
       color: #fff;
-      border: none;
       cursor: pointer;
-      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
     #logout {
       position: absolute;
       top: 10px;
       left: 10px;
+      background-color: #6c757d;
+      color: #fff;
+      cursor: pointer;
+      padding: 5px;
+      width: 80px;
     }
-    .icon {
-      margin-right: 5px;
-    }
-    footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      background-color: #f0f8ff;
-    }
-    footer p:last-child {
-      margin-left: 80%;
-    }
-    #adminId {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    #logout:hover {
+      background-color: #5a6268;
     }
     .chart-container {
       width: 300px;
@@ -70,6 +64,31 @@
     .chart-container h3 {
       font-size: 0.6em;
       text-align: center;
+    }
+    footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #f0f0f0;
+    }
+    #loginTime {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+    }
+    #adminId {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    #adminAccount {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
     }
   </style>
 </head>
@@ -88,10 +107,8 @@
 
 <button id="logout">Deslogar</button>
 
-<footer>
-  <p id="loginTime"></p>
-  <p>Conta de Administração</p>
-</footer>
+<p id="loginTime"></p>
+<p id="adminAccount">Conta de Administração</p>
 
 <p id="adminId"></p>
 

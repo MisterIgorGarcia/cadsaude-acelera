@@ -11,13 +11,14 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
       background-color: #f0f0f0;
     }
     .container {
       width: 100%;
+      height: 100%; /* Aumentado para 130% */
       background-color: #fff;
       padding: 20px;
       border-radius: 5px;
@@ -25,7 +26,7 @@
       position: relative;
     }
     h2 {
-      text-align: left;
+      text-align: center;
     }
     div {
       margin-bottom: 10px;
@@ -34,15 +35,21 @@
       padding: 10px;
       box-sizing: border-box;
     }
+    input[type="text"],
+    button {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      display: block;
+      margin: 5px auto;
+    }
     button {
       background-color: #007bff;
       color: #fff;
       cursor: pointer;
-      padding: 5px;
-      border: none;
-      border-radius: 3px;
-      margin-top: 5px;
-      width: 80px;
     }
     button:hover {
       background-color: #0056b3;
@@ -60,11 +67,26 @@
       position: absolute;
       top: 0;
       left: 0;
+      background-color: #6c757d;
+      color: #fff;
+      cursor: pointer;
+      width: 80px;
+      height: 40px;
+    }
+    #backButton:hover {
+      background-color: #5a6268;
     }
     #searchContainer {
       position: absolute;
+      width: 500px;
+      height: 11%;
       top: 0;
       right: 0;
+      display: flex; /* Adicionado para alinhar os elementos horizontalmente */
+    }
+    .searchButton { 
+      width: 80px; 
+      height: 40px;
     }
     .pagination {
       position: fixed;
@@ -81,8 +103,8 @@
         <h2>Buscar Pacientes</h2>
         <div id="searchContainer">
           <input type="text" id="searchInput" placeholder="Buscar por nome ou CPF">
-          <button onclick="fetchPacientes()">Buscar</button>
-          <button onclick="resetSearch()">Resetar</button>
+          <button class="searchButton" onclick="fetchPacientes()">Buscar</button>
+          <button class="searchButton" onclick="resetSearch()">Resetar</button>
         </div>
         <button id="backButton" onclick="window.history.back()">Voltar</button>
         <div id="pacientesList"></div>
@@ -116,7 +138,7 @@
         };
         xhr.send();
       }
-
+      //Funcao para renderizar os cartões com nome e CPF dos pacientes na tela de busca
       function renderPacientes() {
         const pacientesList = document.getElementById('pacientesList');
         pacientesList.innerHTML = ''; // Limpar lista atual
@@ -126,7 +148,7 @@
 
         pacientesToRender.forEach(paciente => {
           pacientesList.innerHTML += `
-            <div style="height: 120px; width: 200px; overflow: auto; font-family: 'Arial'; font-size: 12px; color: #333;">
+            <div style="height: 135px; width: 230px; overflow: auto; font-family: 'Arial'; font-size: 12px; color: #333;">
               <p>Nome: ${paciente.nome}</p>
               <p>CPF: ${paciente.cpf}</p>
               <button onclick="window.location.href='fichaPaciente.html?id=${paciente.id}'">Ver Ficha</button>
@@ -136,7 +158,7 @@
 
         updatePagination();
       }
-
+      //Funcao pra adicionar as páginas da lista de cartões
       function updatePagination() {
         const pageCounter = document.getElementById('pageCounter');
         const totalPages = Math.ceil(allPacientes.length / itemsPerPage);
