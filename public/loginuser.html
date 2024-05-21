@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Comum</title>
+    <title>Login Funcionário</title>
     <style>
-        body {
+       body {
           font-family: Arial, sans-serif;
           margin: 0;
           padding: 0;
@@ -32,7 +32,8 @@
         }
         input[type="text"],
         input[type="password"],
-        input[type="submit"] {
+        input[type="submit"],
+        input[type="button"] { /* Adicione esta linha */
           width: calc(100% - 20px);
           padding: 10px;
           margin-bottom: 10px;
@@ -50,15 +51,24 @@
         input[type="submit"]:hover {
           background-color: #0056b3;
         }
+        input[type="button"] { /* Adicione esta linha */
+          background-color: #6c757d;
+          color: #fff;
+          cursor: pointer;
+        }
+        input[type="button"]:hover { /* Adicione esta linha */
+          background-color: #5a6268;
+        }
       </style>
 </head>
 <body>
     <div class="form">
-        <h2>Login Comum</h2>
+        <h2>Login Funcionário</h2>
         <form action="/public/loginuser" method="POST">
             <input type="text" name="username" placeholder="Nome de usuário" required>
             <input type="password" name="password" placeholder="Senha" required>
             <input type="submit" value="Login">
+            <input type="button" value="Voltar" onclick="window.location.href='index.html'">
         </form>
     </div>
 </body>

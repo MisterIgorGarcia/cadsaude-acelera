@@ -91,15 +91,15 @@
     .then(data => {
       alert(data);
       sessionStorage.setItem('username', username); // Armazene o nome de usuário do usuário logado em sessionStorage
-      window.history.back();
+      window.history.back(); //Quando voce cadastra ele retorna para o menu anterior
     })
     .catch(error => {
       console.error('Erro:', error);
     });
   });
-   // Recupere o nome de usuário do usuário logado de sessionStorage
+   // Logica para voltar a pagina anterior ao clicar no voltar
   document.getElementById('voltar').addEventListener('click', function() {
-    window.history.back();
+  window.history.back();
   });
   
 </script>

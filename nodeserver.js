@@ -1,3 +1,5 @@
+// Importando o módulo gerador de bancos do arquivo "geradorbanco.js"
+const gerarBanco = require('./geradorbanco');
 // Importando as bibliotecas necessárias.
 const mysql = require('mysql');
 const SerialPort = require('serialport');
@@ -8,6 +10,8 @@ const express = require('express');
 const session = require('express-session');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const readline = require('readline');
+
 
 // Inicializando e configurando o servidor Express
 const app = express();
@@ -18,7 +22,39 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'cadsaude'
+});
+
+// Conectando ao banco de dados
+connection.connect((err) => {
+  console.log('Tentando se conectar com o banco de dados...')
+  if (err) {
+    console.error('Erro ao conectar ao banco de dados:', err);
+    console.log('---------------------------');
+    throw err;
+  }
+  console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
+  console.log('---------------------------');
+
+  // Criando o banco de dados cadsaude se ele não existir
+  connection.query('CREATE DATABASE IF NOT EXISTS cadsaude', (err) => {
+    if (err) {
+      console.error('Erro ao criar o banco de dados:', err);
+      return;
+    }
+    console.log('Banco de dados cadsaude criado ou já existente.');
+
+    // Selecionando o banco de dados cadsaude
+    connection.changeUser({database : 'cadsaude'}, (err) => {
+      if (err) {
+        console.error('Erro ao selecionar o banco de dados:', err);
+        return;
+      }
+      console.log('Banco de dados cadsaude selecionado com sucesso.');
+
+      // Chama a função para gerar as tabelas
+      gerarBanco(connection);
+    });
+  });
 });
 
 //Configura a sessão express com o segredo de sessão
@@ -40,18 +76,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurando o servidor para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Conectando ao banco de dados
-connection.connect((err) => {
-  console.log('Tentando se conectar com o banco de dados...')
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    console.log('---------------------------');
-    throw err;
-  }
-  console.log('Conexão com o banco de dados MySQL estabelecida com sucesso!');
-  console.log('---------------------------');
-});
 
 // Listar as portas seriais disponíveis
 SerialPort.SerialPort.list().then(ports => {
@@ -134,7 +158,6 @@ app.post('/public/loginadmin', async (req, res) => {
     const validPassword = await bcrypt.compare(password, admin.password);
     if (validPassword) {
       req.session.username = username; // armazene o nome de usuário na sessão
-      // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
       res.redirect(`/dashboardadm?admin=${username}`);
     } else {
       res.status(401).send('Senha incorreta');
@@ -146,6 +169,7 @@ app.get('/dashboardadm', (req, res) => {
   // Renderize o arquivo HTML do dashboard ou envie uma resposta adequada
   res.sendFile(path.join(__dirname, 'public/dashadmin.html'));
 });
+
 
 // Endpoint para login de usuário comum
 app.post('/public/loginuser', async (req, res) => {
@@ -167,13 +191,18 @@ app.post('/public/loginuser', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
       req.session.username = username; // armazene o nome de usuário na sessão
-      // Autenticação bem-sucedida, redirecione ou envie uma resposta adequada
-      res.status(200).send('Login de usuário comum bem-sucedido');
+      res.redirect(`/dashboarduser?user=${username}`);
     } else {
       res.status(401).send('Senha incorreta');
     }
   });
 });
+// Rota para o dashboard após o login do usuário comum
+app.get('/dashboarduser', (req, res) => {
+  // Renderize o arquivo HTML do dashboard ou envie uma resposta adequada
+  res.sendFile(path.join(__dirname, 'public/dashuser.html'));
+});
+
 //----------------------- Módulo de Login fim --------------------------//
 
 //----------------------- Módulo do Cadastro de Usuários inicio--------------------------//
@@ -335,46 +364,150 @@ app.get('/grafico', (req, res) => {
   });
 });
 
-//--------------------- Módulo para Dashboards fim --------------------//
-
-// Endpoint para receber dados do formulário de Pacientes
+// Endpoint para cadastrar dados do formulário de Pacientes
 app.post('/api/paciente', (req, res) => {
   const { nome, cpf, email, endereco, cidade, estado } = req.body;
-  const query = `INSERT INTO pacientes (nome, cpf, email, endereco, cidade, estado) VALUES
-   ('${nome}', '${cpf}', '${email}', '${endereco}', '${cidade}', '${estado}')`;
-
-  connection.query(query, (err, result) => {
+  // Verifique se todos os campos necessários estão presentes
+  if (!nome || !cpf || !email || !endereco || !cidade || !estado) {
+    return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+  // Verifique se o CPF já está em uso
+  const checkQuery = `SELECT * FROM pacientes WHERE cpf = ?`;
+  connection.query(checkQuery, [cpf], (err, results) => {
     if (err) {
-      console.error('Erro ao inserir os dados no banco de dados:', err);
-      console.log('-------------------------');
-      res.status(500).send('Erro interno do servidor');
-      console.log('-------------------------');
-      return;
+      console.error('Erro ao verificar paciente:', err);
+      return res.status(500).json({ message: 'Erro interno do servidor' });
     }
-    res.status(200).send('Dados de paciente inseridos com sucesso');
-    console.log('-------------------------');
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'CPF já em uso.' });
+    }
+    // Insira o paciente no banco de dados
+    const insertQuery = `INSERT INTO pacientes (nome, cpf, email, endereco, cidade, estado) VALUES (?, ?, ?, ?, ?, ?)`;
+    connection.query(insertQuery, [nome, cpf, email, endereco, cidade, estado], (err, result) => {
+      if (err) {
+        console.error('Erro ao cadastrar paciente:', err);
+        return res.status(500).json({ message: 'Erro interno do servidor' });
+      }
+      console.log(`Paciente ${nome} cadastrado com sucesso.`);
+      res.status(200).json({ message: 'Paciente cadastrado com sucesso.' });
+    });
   });
 });
 
-// Endpoint para receber dados do formulário de Fichas Médicas
-app.post('/api/ficha', (req, res) => {
-  const { cpf, data, hora, sintomas, alergias, registros, notas } = req.body;
-  const query = `INSERT INTO fichas_medicas (cpf, data_emissao, hora_emissao, sintomas, alergias, 
-    registros_anteriores, notas_medicas) VALUES ('${cpf}', '${data}', '${hora}', 
-    '${sintomas}', '${alergias}', '${registros}', '${notas}')`;
-
-  connection.query(query, (err, result) => {
-    if (err) {
-      console.error('Erro ao inserir os dados no banco de dados:', err);
-      console.log('-------------------------');
-      res.status(500).send('Erro interno do servidor');
-      console.log('-------------------------');
-      return;
-    }
-    res.status(200).send('Dados da ficha médica inseridos com sucesso');
-    console.log('-------------------------');
+// Rota e funcionalidade para a tela de buscar pacientes
+app.get('/api/buscarpacientes', (req, res) => {
+  connection.query('SELECT * FROM pacientes', (err, result) => {
+    if (err) throw err;
+    res.json(result);
   });
 });
+app.get('/api/buscarpacientes/:id', (req, res) => {
+  const pacienteId = req.params.id;
+  connection.query('SELECT * FROM pacientes WHERE id = ?', [pacienteId], (err, pacientes) => {
+    if (err) throw err;
+    if (pacientes.length === 0) {
+      res.status(404).json({ message: 'Paciente não encontrado' });
+      return;
+    }
+    const paciente = pacientes[0];
+    connection.query('SELECT * FROM fichas_medicas WHERE cpf = ?', [paciente.cpf], (err, fichasMedicas) => {
+      if (err) throw err;
+      paciente.fichasMedicas = fichasMedicas;
+      connection.query('SELECT * FROM uid WHERE conteudo = ?', [paciente.cpf], (err, uids) => {
+        if (err) throw err;
+        paciente.uids = uids;
+        res.json(paciente);
+      });
+    });
+  });
+});
+
+//Endpoint para cadastro de fichas medicas
+
+//Endpoint para cadastro de UID de cartões RFID 
+
+//--------------------- Módulo para Dashboards fim --------------------//
+
+//--------------------- Módulo para Comandos node inicio --------------------//
+// Interface de linha de comando
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+//Função para lidar com consultas no banco
+function executarQuery(sql, params, callback) {
+  connection.query(sql, params, function (error, results, fields) {
+    if (error) throw error;
+    callback(results);
+  });
+}
+
+//Função para limpar as Tabelas do banco
+const limparTabelas = () => {
+  rl.question('Tem certeza que deseja limpar todas as tabelas do banco de dados cadsaude? (sim/nao) ', resposta => {
+    if (resposta.toLowerCase() === 'sim') {
+      // Lista de tabelas para limpar
+      const tabelasParaLimpar = ['uid', 'admin', 'users', 'pacientes', 'fichas_medicas'];
+
+      tabelasParaLimpar.forEach(tabela => {
+        executarQuery(`TRUNCATE TABLE ${tabela};`, () => console.log(`Tabela ${tabela} limpa com sucesso!`));
+      });
+
+      console.log('Todas as tabelas foram limpas.');
+    } else {
+      console.log('Ação de limpar tabelas cancelada.');
+    }
+  });
+};
+
+
+// Função para adicionar/atualizar um administrador
+const adicionarSuperAdmin = () => {
+  const adminId = 1;
+  const username = 'admincadsaude';
+  const senhaPlana = '123456';
+
+  // Verificar se o usuário admincadsaude com ID 1 já existe
+  const queryVerificar = 'SELECT * FROM admin WHERE id = ?;';
+  executarQuery(queryVerificar, [adminId], results => {
+    if (results.length > 0 && bcrypt.compareSync(senhaPlana, results[0].password)) {
+      console.log('O usuário admincadsaude com ID 1 já existe.');
+    } else {
+      console.log('Criando o usuário admincadsaude com ID 1...');
+      // Se o usuário não existe, adicionar como novo administrador
+      bcrypt.hash(senhaPlana, 10, (err, hash) => {
+        if (err) throw err;
+        const queryAdicionar = 'INSERT INTO admin (id, username, password) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE username = ?, password = ?;';
+        executarQuery(queryAdicionar, [adminId, username, hash, username, hash], () => console.log('Administrador com ID 1 adicionado/atualizado com sucesso!'));
+      });
+    }
+  });
+};
+
+// Função para listar todos os comandos possíveis
+const helpComando = () =>{
+  console.log('Comandos:');
+  console.log('limparbanco (Limpa todas as tabelas)\ncriarsuperuser (Adiciona um super-usuario administrador)');
+};
+
+// Listener para comandos
+rl.on('line', input => {
+  switch (input) {
+    case 'limparbanco':
+      limparTabelas();
+      break;
+    case 'criarsuperuser':
+      adicionarSuperAdmin();
+      break;
+    case 'help':
+      helpComando();
+      break; 
+    default:
+      console.log('Comando não reconhecido. Digite help para listar todos os comandos disponiveis.');
+  }
+});
+//--------------------- Módulo para Comandos node fim --------------------//
 
 // Iniciando o servidor
 console.log('---// Seja bem vindo ao servidor do CadSaude //---');
