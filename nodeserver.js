@@ -443,7 +443,7 @@ function executarQuery(sql, params, callback) {
   });
 }
 
-//Função para limpar as Tabelas do banco
+//Função para limpar as Tabelas do banco com comando 
 const limparTabelas = () => {
   rl.question('Tem certeza que deseja limpar todas as tabelas do banco de dados cadsaude? (sim/nao) ', resposta => {
     if (resposta.toLowerCase() === 'sim') {
@@ -462,7 +462,7 @@ const limparTabelas = () => {
 };
 
 
-// Função para adicionar/atualizar um administrador
+// Função para adicionar/atualizar um administrador com comando
 const adicionarSuperAdmin = () => {
   const adminId = 1;
   const username = 'admincadsaude';
@@ -485,10 +485,24 @@ const adicionarSuperAdmin = () => {
   });
 };
 
+//Funcao para comando de apagar o banco de dados e encerrar o nodeserver.js
+function dropDatabaseAndExit() {
+  connection.query('DROP DATABASE IF EXISTS cadsaude', (error, results, fields) => {
+      if (error) throw error;
+      console.log('Banco de dados cadsaude apagado com sucesso.');
+  });
+
+  connection.end((err) => {
+      if (err) throw err;
+      console.log('Conexão encerrada com sucesso.');
+      process.exit();
+  });
+}
+
 // Função para listar todos os comandos possíveis
 const helpComando = () =>{
   console.log('Comandos:');
-  console.log('limparbanco (Limpa todas as tabelas)\ncriarsuperuser (Adiciona um super-usuario administrador)');
+  console.log('limparbanco (Limpa todas as tabelas)\ncriarsuperuser (Adiciona um super-usuario administrador)\napagarbanco(Apaga o banco cadsaude e desliga o server)');
 };
 
 // Listener para comandos
@@ -499,6 +513,9 @@ rl.on('line', input => {
       break;
     case 'criarsuperuser':
       adicionarSuperAdmin();
+      break;
+    case 'apagarbanco':
+      dropDatabaseAndExit();
       break;
     case 'help':
       helpComando();
