@@ -401,28 +401,28 @@ app.get('/api/buscarpacientes', (req, res) => {
     res.json(result);
   });
 });
-app.get('/api/buscarpacientes/:id', (req, res) => {
-  const pacienteId = req.params.id;
-  connection.query('SELECT * FROM pacientes WHERE id = ?', [pacienteId], (err, pacientes) => {
-    if (err) throw err;
-    if (pacientes.length === 0) {
-      res.status(404).json({ message: 'Paciente não encontrado' });
-      return;
-    }
-    const paciente = pacientes[0];
-    connection.query('SELECT * FROM fichas_medicas WHERE cpf = ?', [paciente.cpf], (err, fichasMedicas) => {
-      if (err) throw err;
-      paciente.fichasMedicas = fichasMedicas;
-      connection.query('SELECT * FROM uid WHERE conteudo = ?', [paciente.cpf], (err, uids) => {
+// Rota para criar uma ficha médica para um paciente
+app.post('/pacientes/:id/fichas_medicas', (req, res) => {
+    const pacienteId = req.params.id;
+    const { cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas } = req.body;
+
+    const query = 'INSERT INTO fichas_medicas (cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    connection.query(query, [cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas], (err, result) => {
         if (err) throw err;
-        paciente.uids = uids;
-        res.json(paciente);
-      });
+        res.send('Ficha médica criada com sucesso!');
     });
-  });
 });
 
-//Endpoint para cadastro de fichas medicas
+// Rota para criar um UID
+app.post('/uid', (req, res) => {
+    const { conteudo } = req.body;
+
+    const query = 'INSERT INTO uid (conteudo) VALUES (?)';
+    connection.query(query, [conteudo], (err, result) => {
+        if (err) throw err;
+        res.send('UID criado com sucesso!');
+    });
+});
 
 //Endpoint para cadastro de UID de cartões RFID 
 
