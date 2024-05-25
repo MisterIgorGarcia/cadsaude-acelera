@@ -99,6 +99,7 @@
   <button id="cadastroAdmin">Cadastrar um novo administrador</button>
   <button id="cadastroUsuario">Cadastrar um novo usuário comum</button>
   <button id="apagarAdmin">Apagar um usuário do sistema</button>
+  <button id="alterarUser">Altera um usuário do sistema</button>
   <div class="chart-container">
     <canvas id="cadsaudeChart"></canvas>
     <h3>Composição do banco de dados</h3>
@@ -144,6 +145,10 @@
 
   document.getElementById('apagarAdmin').addEventListener('click', function() {
     window.location.href = '/deletarusuario.html';
+  });
+
+  document.getElementById('alterarUser').addEventListener('click', function() {
+    window.location.href = '/listaalterar.html';
   });
 
   document.getElementById('logout').addEventListener('click', function() {
@@ -195,6 +200,5 @@ atualizarGrafico();
 // Velocidade de atualização automatica do grafico em milisegundos
 setInterval(atualizarGrafico, 5000);
 </script>
-
 </body>
 </html>

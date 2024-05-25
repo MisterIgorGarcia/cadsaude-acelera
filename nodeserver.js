@@ -329,6 +329,43 @@ app.delete('/api/listarusers/:id', (req, res) => {
 });
 //----------------------- Módulo de Deletar fim--------------------------//
 
+//----------------------- Módulo de Alterar inicio--------------------------//
+// Rota para listar usuários funcionarios
+app.get('/listaalteracao/users', (req, res) => {
+  connection.query('SELECT * FROM users', (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
+});
+
+// Rota para listar administradores
+app.get('/listaalteracao/admins', (req, res) => {
+  connection.query('SELECT * FROM admin', (err, results) => {
+    if (err) throw err;
+    res.send(results);
+  });
+});
+
+
+// Rota para atualizar um usuário com senha criptografada
+app.post('/editarusuario/:id', (req, res) => {
+  const userId = req.params.id;
+  const { username, password } = req.body;
+
+  // Gerar o hash da senha
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      res.status(500).send('Erro ao criptografar a senha');
+    } else {
+      // Atualizar o usuário com a senha criptografada
+      connection.query('UPDATE users SET username = ?, password = ? WHERE id = ?', [username, hash, userId], (err, results) => {
+        if (err) throw err;
+        res.send('Usuário atualizado com sucesso!');
+      });
+    }
+  });
+});
+//----------------------- Módulo de Alterar fim--------------------------//
 
 //----------------------- Módulo para Dashboards inicio ----------------//
 //Função para mostrar o ID logado no canto da tela.
