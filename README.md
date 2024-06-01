@@ -10,6 +10,6 @@ Um sistema de cadastro e leitura de pacientes e formulários médicos por meio d
 **nodeserver.js :** 
 bibliotecas Serialport, Serialport parser readline, MySql, Body-Parser e Express
 para baixa-las digite no terminal dentro da pasta do projeto: 
-*npm install mysql serialport @serialport/parser-readline body-parser express express-session bcrypt*
+*npm install mysql serialport @serialport/parser-readline cors body-parser express express-session bcrypt*
 
 ### Integrantes : Amaury, Igor, Matheus
