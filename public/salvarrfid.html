@@ -1,62 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salvar RFID</title>
-</head>
-<body>
-  <h1>Leitura de RFID</h1>
-  <button id="lerRFID" onclick="toggleLeituraRFID()">Ler RFID</button>
-  <p id="rfidResult"></p>
-  <p id="statusLeitura"></p>
-
   <script>
-    let leituraAtiva = false; // Variável para controlar o estado da leitura RFID
-
-    // Função para alternar entre iniciar e desativar a leitura RFID
-    async function toggleLeituraRFID() {
-      const statusLeitura = document.getElementById('statusLeitura');
-      const rfidResult = document.getElementById('rfidResult');
-
-      if (leituraAtiva) {
-        // Desativar a leitura RFID
-        statusLeitura.innerText = 'Desativando leitura...';
-        rfidResult.innerText = '';
-
-        // Limpar o intervalo de leitura RFID, se estiver ativo
-        clearInterval(intervaloLeitura);
-        leituraAtiva = false;
-
-        // Atualizar o status da leitura
-        statusLeitura.innerText = 'Leitura desativada';
-      } else {
-        // Iniciar a leitura RFID
-        statusLeitura.innerText = 'Iniciando leitura...';
-        rfidResult.innerText = '';
-
-        // Ativar a leitura RFID (definindo um intervalo para buscar os dados repetidamente)
-        intervaloLeitura = setInterval(() => {
-          lerRFID();
-        }, 1000); // Defina o intervalo de leitura conforme necessário
-
-        // Atualizar o status da leitura
-        statusLeitura.innerText = 'Leitura ativa';
-        leituraAtiva = true;
+    async function fetchUID() {
+      try {
+        const response = await fetch('http://localhost:3000/api/uid'); // Certifique-se de que o endereço está correto
+        if (!response.ok) {
+          throw new Error('Erro na requisição');
+        }
+        const data = await response.json();
+        document.getElementById('uid').value = data.uid;
+      } catch (error) {
+        console.error('Erro ao buscar UID:', error);
       }
     }
 
-    // Função para realizar a leitura RFID
-    async function lerRFID() {
+    async function saveUID() {
+      const uid = document.getElementById('uid').value;
+      if (!uid) {
+        alert('UID não pode estar vazio');
+        return;
+      }
+
       try {
-        const response = await fetch('/api/uid', {
+        const response = await fetch('http://localhost:3000/api/save', { // Certifique-se de que o endereço está correto
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ uid })
         });
 
-        const result = await response.json();
-        document.getElementById('rfidResult').innerText = result.message;
+        if (!response.ok) {
+          throw new Error('Erro ao salvar UID');
+        }
+
+        const data = await response.json();
+        alert(data.message);
       } catch (error) {
-        document.getElementById('rfidResult').innerText = 'Erro ao ler RFID';
+        console.error('Erro ao salvar UID:', error);
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchUID();
+      setInterval(fetchUID, 1000); // Atualiza o UID a cada 1 segundo
+    });
   </script>
+</head>
+<body>
+  <h1>Salvar UID</h1>
+  <label for="uid">UID Lido:</label>
+  <input type="text" id="uid" readonly>
+  <button onclick="saveUID()">Salvar UID</button>
 </body>
 </html>

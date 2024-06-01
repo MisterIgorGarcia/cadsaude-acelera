@@ -4,6 +4,7 @@ const gerarBanco = require('./geradorbanco');
 const mysql = require('mysql');
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const express = require('express');
@@ -70,9 +71,6 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Servindo arquivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Configurando o servidor para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -89,17 +87,12 @@ SerialPort.SerialPort.list().then(ports => {
   console.error('Erro ao listar portas seriais:', err);
 });
 
+
 // Configura a porta serial
 const port = new SerialPort.SerialPort({
   path: 'COM3',
   baudRate: 9600 // Ajuste a taxa de transmissão conforme necessário
 });
-
-// Cria um parser para ler os dados da porta serial
-const parser = port.pipe(new Readline.ReadlineParser({ delimiter: '\r\n' }));
-
-// Variável para armazenar o último UID lido
-let lastUID = '';
  
 // Evento disparado quando a porta é aberta com sucesso
 port.on('open', () => {
@@ -113,38 +106,6 @@ port.on('error', (err) => {
   console.log('-------------------------');
 });
  
-// Evento disparado quando dados são recebidos pela porta serial
-parser.on('data', (data) => {
-  console.log('Dados recebidos:', data);
-  lastUID = data;
-  console.log('-------------------------');
-});
-
-// Rota para servir a página HTML
-app.get('/salvarrfid.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'salvarrfid.html'));
-});
-
-// Configurando o endpoint para receber os dados da porta serial
-app.post('/api/uid', (req, res) => {
-  if (lastUID) {
-    const query = `INSERT INTO uid (conteudo) VALUES ('${lastUID}')`;
-    connection.query(query, (err, result) => {
-      if (err) {
-        console.error('Erro ao inserir os dados no banco de dados:', err);
-        res.status(500).json({ message: 'Erro interno do servidor' });
-        console.log('-------------------------');
-        return;
-      }
-      console.log('Dados inseridos com sucesso no banco de dados:', result);
-      res.status(200).json({ message: 'Dados inseridos com sucesso no banco de dados' });
-      console.log('-------------------------');
-    });
-  } else {
-    res.status(400).json({ message: 'Nenhum UID lido ainda' });
-  }
-});
-
 //----------------------- Módulo de Login Inicio --------------------------//
 // Endpoint para login de administrador
 app.post('/public/loginadmin', async (req, res) => {
@@ -466,12 +427,61 @@ app.post('/uid', (req, res) => {
         res.send('UID criado com sucesso!');
     });
 });
-
-//Endpoint para cadastro de UID de cartões RFID 
-
 //--------------------- Módulo para Dashboards fim --------------------//
 
-//--------------------- Módulo para Comandos node inicio --------------------//
+//--------------------- Módulo para Leitura de RFID inicio --------------------//
+//Inicializando o CORS (Cross-Origin Resource Sharing)
+app.use(cors());
+
+//Conectando cors com a pagina de leitura.
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/salvarrfid', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/salvarrfid.html'));
+});
+
+// Cria um parser para ler os dados da porta serial
+const parser = port.pipe(new Readline.ReadlineParser({ delimiter: '\r\n' }));
+
+// Variável para armazenar o último UID lido
+let lastUID = '';
+
+// Evento disparado quando dados são recebidos pela porta serial
+parser.on('data', (data) => {
+  console.log('Dados recebidos: ', data);
+  let splitData = data.split('UID: ');
+  if (splitData.length > 1) {
+    lastUID = splitData[1].trim(); // Isso irá armazenar apenas o número do UID, sem o prefixo "UID: "
+  }
+});
+
+// Rota para servir a página HTML
+app.get('/api/uid', (req, res) => {
+  if (lastUID) {
+    res.json({ uid: lastUID });
+  } else {
+    res.status(404).json({ message: 'Nenhum UID lido ainda' });
+  }
+});
+
+// Rota para salvar o rfid lido
+app.post('/api/save', (req, res) => {
+  const { uid } = req.body;
+  if (!uid) {
+    return res.status(400).json({ message: 'UID é necessário' });
+  }
+  const query = 'INSERT INTO uid (conteudo) VALUES (?)';
+  connection.query(query, [uid], (err, result) => {
+    if (err) {
+      console.error('Erro ao salvar UID no banco de dados:', err);
+      return res.status(500).json({ message: 'Erro ao salvar UID' });
+    }
+    res.status(200).json({ message: 'UID salvo com sucesso' });
+  });
+});
+
+//--------------------- Módulo para Leitura de RFID fim--------------------//
+
+//--------------------- Módulo para Comandos node fim --------------------//
 // Interface de linha de comando
 const rl = readline.createInterface({
   input: process.stdin,
