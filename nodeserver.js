@@ -12,7 +12,6 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const readline = require('readline');
 
-
 // Inicializando e configurando o servidor Express
 const app = express();
 const portNumber = 3000;
@@ -92,12 +91,15 @@ SerialPort.SerialPort.list().then(ports => {
 
 // Configura a porta serial
 const port = new SerialPort.SerialPort({
-  path: 'COM1',
+  path: 'COM3',
   baudRate: 9600 // Ajuste a taxa de transmissão conforme necessário
 });
 
 // Cria um parser para ler os dados da porta serial
 const parser = port.pipe(new Readline.ReadlineParser({ delimiter: '\r\n' }));
+
+// Variável para armazenar o último UID lido
+let lastUID = '';
  
 // Evento disparado quando a porta é aberta com sucesso
 port.on('open', () => {
@@ -114,27 +116,33 @@ port.on('error', (err) => {
 // Evento disparado quando dados são recebidos pela porta serial
 parser.on('data', (data) => {
   console.log('Dados recebidos:', data);
+  lastUID = data;
   console.log('-------------------------');
+});
+
+// Rota para servir a página HTML
+app.get('/salvarrfid.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'salvarrfid.html'));
 });
 
 // Configurando o endpoint para receber os dados da porta serial
 app.post('/api/uid', (req, res) => {
-  parser.on('data', async (conteudo) => {
-    // Salvando os dados no banco de dados
-    const query = `INSERT INTO uid (conteudo) VALUES ('${data}')`;
-
+  if (lastUID) {
+    const query = `INSERT INTO uid (conteudo) VALUES ('${lastUID}')`;
     connection.query(query, (err, result) => {
       if (err) {
         console.error('Erro ao inserir os dados no banco de dados:', err);
-        res.status(500).send('Erro interno do servidor');
+        res.status(500).json({ message: 'Erro interno do servidor' });
         console.log('-------------------------');
         return;
       }
       console.log('Dados inseridos com sucesso no banco de dados:', result);
-      res.status(200).send('Dados inseridos com sucesso no banco de dados');
+      res.status(200).json({ message: 'Dados inseridos com sucesso no banco de dados' });
       console.log('-------------------------');
     });
-  });
+  } else {
+    res.status(400).json({ message: 'Nenhum UID lido ainda' });
+  }
 });
 
 //----------------------- Módulo de Login Inicio --------------------------//
@@ -346,12 +354,10 @@ app.get('/listaalteracao/admins', (req, res) => {
   });
 });
 
-
 // Rota para atualizar um usuário com senha criptografada
-app.post('/editarusuario/:id', (req, res) => {
+app.post('/public/editarusuario/:id', (req, res) => {
   const userId = req.params.id;
   const { username, password } = req.body;
-
   // Gerar o hash da senha
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {

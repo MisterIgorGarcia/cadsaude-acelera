@@ -49,7 +49,7 @@
       color: #fff;
       cursor: pointer;
       padding: 5px;
-      width: 80px; /* Reduzir o tamanho do botão */
+      width: 80px;
     }
     #logout:hover {
       background-color: #5a6268;
@@ -100,15 +100,14 @@
     <h1>Usuários e Administradores</h1>
     <h2>Usuários Comuns</h2>
     <ul id="lista-usuarios">
-    <!-- Os usuários comuns serão carregados aqui -->
-</ul>
-<h2>Administradores</h2>
-  <ul id="lista-administradores">
-    <!-- Os administradores serão carregados aqui -->
-  </ul>
-</body>
-<script>
-    // Função para carregar os usuários e administradores assim que a página for carregada
+      <!-- Os usuários comuns serão carregados aqui -->
+    </ul>
+    <h2>Administradores</h2>
+    <ul id="lista-administradores">
+      <!-- Os administradores serão carregados aqui -->
+    </ul>
+  </div>
+  <script>
     window.onload = function() {
       // Buscar usuários comuns
       fetch('/listaalteracao/users')
@@ -143,4 +142,5 @@
         });
     };
   </script>
+</body>
 </html>

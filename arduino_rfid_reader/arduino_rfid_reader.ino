@@ -1,3 +1,8 @@
+#include <MFRC522.h>
+#include <MFRC522Extended.h>
+#include <deprecated.h>
+#include <require_cpp11.h>
+
 //Importação das bibliotecas necessárias
 #include <MFRC522.h>
 #include <SPI.h>

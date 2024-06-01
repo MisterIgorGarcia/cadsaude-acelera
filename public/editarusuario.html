@@ -1,53 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Editar Usuário</title>
+    <meta charset="UTF-8">
+    <title>Editar Usuário</title>
 </head>
 <body>
-  <h1>Editar Usuário</h1>
-  <form onsubmit="return enviarFormulario();">
-    <input type="hidden" id="userid">
-    <input type="text" id="username" placeholder="Novo login" required>
-    <input type="password" id="password" placeholder="Nova senha" required>
-    <button type="submit">Atualizar</button>
-  </form>
-  <script>
-    // Função para carregar os dados do usuário para edição
-    function carregarUsuario() {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
-      fetch('/public/editarusuario/' + id)
-        .then(response => response.json())
-        .then(data => {
-          const usuario = data[0];
-          document.getElementById('username').value = usuario.username;
-          document.getElementById('userid').value = usuario.id;
-        });
-    }
+    <h1>Editar Usuário</h1>
+    <form onsubmit="return enviarFormulario();">
+        <input type="hidden" id="userid">
+        <input type="text" id="username" placeholder="Novo login" required>
+        <input type="password" id="password" placeholder="Nova senha" required>
+        <button type="submit">Atualizar</button>
+    </form>
 
-    // Função para enviar o formulário
-    function enviarFormulario() {
-      const id = document.getElementById('userid').value;
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+    <script>
+        // Função para carregar os dados do usuário para edição
+        function carregarUsuario() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            console.log('ID do usuário:', id); // Verificar se o ID está sendo obtido
+            fetch('/public/editarusuario/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    const usuario = data[0];
+                    document.getElementById('username').value = usuario.username;
+                    document.getElementById('userid').value = usuario.id;
+                    console.log('Dados do usuário carregados:', usuario); // Verificar se os dados estão sendo carregados
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar usuário:', error); // Adicionando log de erro
+                });
+        }
 
-      fetch('/public/editarusuario/' + id, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      })
-      .then(response => response.text())
-      .then(data => {
-        alert(data);
-      });
+        // Função para enviar o formulário
+        function enviarFormulario() {
+            const id = document.getElementById('userid').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-      return false; // Para evitar o recarregamento da página
-    }
+            if (!id) {
+                console.error('ID do usuário não encontrado!'); // Verificar se o ID está vazio
+                alert('Erro: ID do usuário não encontrado!');
+                return false;
+            }
 
-    window.onload = carregarUsuario;
+            console.log('ID:', id);
+            console.log('Enviando dados:', { id, username, password });
+
+            fetch('/public/editarusuario/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Resposta do servidor:', data);
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Erro na requisição:', error); // Adicionando log de erro
+            });
+
+            return false; // Para evitar o recarregamento da página
+        }
+
+        window.onload = carregarUsuario;
     </script>
 </body>
 </html>

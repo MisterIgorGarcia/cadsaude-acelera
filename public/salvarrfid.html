@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Salvar RFID</title>
+</head>
+<body>
+  <h1>Leitura de RFID</h1>
+  <button id="lerRFID" onclick="toggleLeituraRFID()">Ler RFID</button>
+  <p id="rfidResult"></p>
+  <p id="statusLeitura"></p>
+
+  <script>
+    let leituraAtiva = false; // Variável para controlar o estado da leitura RFID
+
+    // Função para alternar entre iniciar e desativar a leitura RFID
+    async function toggleLeituraRFID() {
+      const statusLeitura = document.getElementById('statusLeitura');
+      const rfidResult = document.getElementById('rfidResult');
+
+      if (leituraAtiva) {
+        // Desativar a leitura RFID
+        statusLeitura.innerText = 'Desativando leitura...';
+        rfidResult.innerText = '';
+
+        // Limpar o intervalo de leitura RFID, se estiver ativo
+        clearInterval(intervaloLeitura);
+        leituraAtiva = false;
+
+        // Atualizar o status da leitura
+        statusLeitura.innerText = 'Leitura desativada';
+      } else {
+        // Iniciar a leitura RFID
+        statusLeitura.innerText = 'Iniciando leitura...';
+        rfidResult.innerText = '';
+
+        // Ativar a leitura RFID (definindo um intervalo para buscar os dados repetidamente)
+        intervaloLeitura = setInterval(() => {
+          lerRFID();
+        }, 1000); // Defina o intervalo de leitura conforme necessário
+
+        // Atualizar o status da leitura
+        statusLeitura.innerText = 'Leitura ativa';
+        leituraAtiva = true;
+      }
+    }
+
+    // Função para realizar a leitura RFID
+    async function lerRFID() {
+      try {
+        const response = await fetch('/api/uid', {
+          method: 'POST',
+        });
+
+        const result = await response.json();
+        document.getElementById('rfidResult').innerText = result.message;
+      } catch (error) {
+        document.getElementById('rfidResult').innerText = 'Erro ao ler RFID';
+      }
+    }
+  </script>
+</body>
+</html>
