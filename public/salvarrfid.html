@@ -7,7 +7,7 @@
   <script>
     async function fetchUID() {
       try {
-        const response = await fetch('http://localhost:3000/api/uid'); // Certifique-se de que o endereço está correto
+        const response = await fetch('http://localhost:3000/api/uid');
         if (!response.ok) {
           throw new Error('Erro na requisição');
         }
@@ -26,7 +26,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:3000/api/save', { // Certifique-se de que o endereço está correto
+        const response = await fetch('http://localhost:3000/api/save', { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -47,7 +47,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       fetchUID();
-      setInterval(fetchUID, 1000); // Atualiza o UID a cada 1 segundo
+      setInterval(fetchUID, 1000); // Atualização do campo
     });
   </script>
 </head>

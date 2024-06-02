@@ -90,6 +90,14 @@
       right: 10px;
       bottom: 10px;
     }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .button-container button {
+      width: calc(50% - 10px);
+    }
   </style>
 </head>
 <body>
@@ -98,8 +106,11 @@
   <h2>Bem-vindo, <span id="adminName"></span>!</h2>
   <button id="cadastroAdmin">Cadastrar um novo administrador</button>
   <button id="cadastroUsuario">Cadastrar um novo usuário comum</button>
-  <button id="apagarAdmin">Apagar um usuário do sistema</button>
-  <button id="alterarUser">Altera um usuário do sistema</button>
+  <button id="registrarUID">Registrar novo UID</button>
+  <div class="button-container">
+    <button id="apagarAdmin">Apagar um usuário do sistema</button>
+    <button id="alterarUser">Altera um usuário do sistema</button>
+  </div>
   <div class="chart-container">
     <canvas id="cadsaudeChart"></canvas>
     <h3>Composição do banco de dados</h3>
@@ -141,6 +152,10 @@
 
   document.getElementById('cadastroUsuario').addEventListener('click', function() {
     window.location.href = '/caduser.html';
+  });
+
+  document.getElementById('registrarUID').addEventListener('click', function() {
+    window.location.href = '/salvarrfid.html';
   });
 
   document.getElementById('apagarAdmin').addEventListener('click', function() {
