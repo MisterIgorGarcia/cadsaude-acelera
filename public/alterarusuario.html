@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Usuário</title>
+</head>
+<body>
+    <h1>Atualizar Usuário</h1>
+    <form id="updateUserForm">
+        <label for="userType">Tipo de Usuário:</label>
+        <select id="userType" required>
+            <option value="admin">Administrador</option>
+            <option value="user">Usuário Comum</option>
+        </select>
+
+        <label for="userList">Selecionar Usuário:</label>
+        <select id="userList" required>
+            <!-- Opções serão carregadas dinamicamente -->
+        </select>
+
+        <label for="newUsername">Novo Nome de Usuário:</label>
+        <input type="text" id="newUsername" required>
+
+        <label for="newPassword">Nova Senha:</label>
+        <input type="password" id="newPassword" required>
+
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userTypeSelect = document.getElementById('userType');
+            const userListSelect = document.getElementById('userList');
+
+            // Carrega a lista de usuários quando o tipo de usuário é alterado
+            userTypeSelect.addEventListener('change', function() {
+                const userType = userTypeSelect.value;
+                fetch(`/api/listar${userType}s`)
+                    .then(response => response.json())
+                    .then(data => {
+                        userListSelect.innerHTML = '';
+                        data.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = user.username;
+                            userListSelect.appendChild(option);
+                        });
+                    });
+            });
+
+            // Submete o formulário para atualizar o usuário
+            document.getElementById('updateUserForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const userType = userTypeSelect.value;
+                const userId = userListSelect.value;
+                const newUsername = document.getElementById('newUsername').value;
+                const newPassword = document.getElementById('newPassword').value;
+
+                fetch(`/api/update${userType}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: userId,
+                        username: newUsername,
+                        password: newPassword
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar usuário:', error);
+                });
+            });
+
+            // Trigger initial load of users
+            userTypeSelect.dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>

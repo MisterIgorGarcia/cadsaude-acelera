@@ -299,38 +299,72 @@ app.delete('/api/listarusers/:id', (req, res) => {
 //----------------------- Módulo de Deletar fim--------------------------//
 
 //----------------------- Módulo de Alterar inicio--------------------------//
-// Rota para listar usuários funcionarios
-app.get('/listaalteracao/users', (req, res) => {
-  connection.query('SELECT * FROM users', (err, results) => {
-    if (err) throw err;
-    res.send(results);
+// Endpoint para buscar todos os administradores
+app.get('/api/listaradmins', (req, res) => {
+  const sqlSelect = "SELECT * FROM admin";
+  connection.query(sqlSelect, (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao buscar os administradores.' });
+      }
+      res.json(result);
   });
 });
 
-// Rota para listar administradores
-app.get('/listaalteracao/admins', (req, res) => {
-  connection.query('SELECT * FROM admin', (err, results) => {
-    if (err) throw err;
-    res.send(results);
+// Endpoint para buscar todos os usuários comuns
+app.get('/api/listarusers', (req, res) => {
+  const sqlSelect = "SELECT * FROM users";
+  connection.query(sqlSelect, (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao buscar os usuários.' });
+      }
+      res.json(result);
   });
 });
 
-// Rota para atualizar um usuário com senha criptografada
-app.post('/public/editarusuario/:id', (req, res) => {
-  const userId = req.params.id;
-  const { username, password } = req.body;
-  // Gerar o hash da senha
-  bcrypt.hash(password, 10, (err, hash) => {
-    if (err) {
-      res.status(500).send('Erro ao criptografar a senha');
-    } else {
-      // Atualizar o usuário com a senha criptografada
-      connection.query('UPDATE users SET username = ?, password = ? WHERE id = ?', [username, hash, userId], (err, results) => {
-        if (err) throw err;
-        res.send('Usuário atualizado com sucesso!');
-      });
-    }
+// Endpoint para atualizar administrador
+app.put('/api/updateadmin', async (req, res) => {
+  const { id, username, password } = req.body;
+
+  if (!id || !username || !password) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const updateQuery = 'UPDATE admin SET username = ?, password = ? WHERE id = ?';
+  connection.query(updateQuery, [username, hashedPassword, id], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao atualizar administrador.' });
+      }
+      res.status(200).json({ message: 'Administrador atualizado com sucesso.' });
   });
+});
+
+// Endpoint para atualizar usuário comum
+app.put('/api/updateuser', async (req, res) => {
+  const { id, username, password } = req.body;
+
+  if (!id || !username || !password) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const updateQuery = 'UPDATE users SET username = ?, password = ? WHERE id = ?';
+  connection.query(updateQuery, [username, hashedPassword, id], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao atualizar usuário.' });
+      }
+      res.status(200).json({ message: 'Usuário atualizado com sucesso.' });
+  });
+});
+// Rota para servir a página HTML de atualização de usuários
+app.get('/updateUser', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/alterarusuario.html'));
 });
 //----------------------- Módulo de Alterar fim--------------------------//
 
