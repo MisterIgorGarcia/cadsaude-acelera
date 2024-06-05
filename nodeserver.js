@@ -564,14 +564,15 @@ const adicionarSuperAdmin = () => {
   const queryVerificar = 'SELECT * FROM admin WHERE id = ?;';
   executarQuery(queryVerificar, [adminId], results => {
     if (results.length > 0 && bcrypt.compareSync(senhaPlana, results[0].password)) {
-      console.log('O usuário admincadsaude com ID 1 já existe.');
+      console.log('O usuário admincadsaude com ID 1 já existe.\nCaso não saiba as credenciais são:\nUsuario: admincadsaude\nSenha: 123456');
     } else {
       console.log('Criando o usuário admincadsaude com ID 1...');
       // Se o usuário não existe, adicionar como novo administrador
       bcrypt.hash(senhaPlana, 10, (err, hash) => {
         if (err) throw err;
         const queryAdicionar = 'INSERT INTO admin (id, username, password) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE username = ?, password = ?;';
-        executarQuery(queryAdicionar, [adminId, username, hash, username, hash], () => console.log('Administrador com ID 1 adicionado/atualizado com sucesso!'));
+        executarQuery(queryAdicionar, [adminId, username, hash, username, hash], () =>
+        console.log('Administrador com ID 1 adicionado/atualizado com sucesso!\nCaso não saiba as credenciais são:\nUsuario: admincadsaude\nSenha: 123456'));
       });
     }
   });
@@ -594,19 +595,23 @@ function dropDatabaseAndExit() {
 // Função para listar todos os comandos possíveis
 const helpComando = () =>{
   console.log('Comandos:');
-  console.log('limparbanco (Limpa todas as tabelas)\ncriarsuperuser (Adiciona um super-usuario administrador)\napagarbanco(Apaga o banco cadsaude e desliga o server)');
+  console.log('limpartabelas (Limpa todas as tabelas)\ncriarsuperuser (Adiciona um super-usuario administrador)\napagarbanco(Apaga o banco cadsaude e desliga o server)');
 };
 
 // Listener para comandos
 rl.on('line', input => {
   switch (input) {
-    case 'limparbanco':
+    case 'limpartabelas':
+    case 'wipetabelas':
       limparTabelas();
       break;
     case 'criarsuperuser':
+    case 'criarsuperusuario':
+    case 'criaradmin':
       adicionarSuperAdmin();
       break;
     case 'apagarbanco':
+    case 'wipebanco':
       dropDatabaseAndExit();
       break;
     case 'help':
