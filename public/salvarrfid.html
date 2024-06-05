@@ -65,6 +65,19 @@
     input[type="button"].gray:hover {
       background-color: #5a6268;
     }
+
+    .flash {
+      animation: flash 0.5s;
+    }
+
+    @keyframes flash {
+      from {
+        background-color: #d4edda;
+      }
+      to {
+        background-color: #fff;
+      }
+    }
   </style>
 </head>
 
@@ -72,7 +85,7 @@
   <div class="form">
     <h1>Salvar UID</h1>
     <label for="uid">UID Lido:</label>
-    <input type="text" id="uid" readonly>
+    <input type="text" id="uid" value="Aproxime o cartão para leitura" readonly>
     <input type="button" value="Salvar UID" onclick="saveUID()">
     <input type="button" value="Voltar" id="voltar" class="gray">
   </div>
@@ -84,7 +97,14 @@
           throw new Error('Erro na requisição');
         }
         const data = await response.json();
-        document.getElementById('uid').value = data.uid;
+        const uidField = document.getElementById('uid');
+        if (uidField.value !== data.uid) {
+          uidField.value = data.uid;
+          uidField.classList.add('flash');
+          setTimeout(() => {
+            uidField.classList.remove('flash');
+          }, 500);
+        }
       } catch (error) {
         console.error('Erro ao buscar UID:', error);
       }
@@ -92,7 +112,7 @@
 
     async function saveUID() {
       const uid = document.getElementById('uid').value;
-      if (!uid) {
+      if (!uid || uid === 'Aproxime o cartão para leitura') {
         alert('UID não pode estar vazio');
         return;
       }
@@ -122,7 +142,7 @@
       setInterval(fetchUID, 1000); // Atualização do campo
     });
 
-    // Logica para voltar a pagina anterior ao clicar no voltar
+    // Lógica para voltar à página anterior ao clicar no botão voltar
     document.getElementById('voltar').addEventListener('click', function () {
       window.history.back();
     });
