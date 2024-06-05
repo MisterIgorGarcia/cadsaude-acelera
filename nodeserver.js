@@ -301,7 +301,7 @@ app.delete('/api/listarusers/:id', (req, res) => {
 //----------------------- Módulo de Alterar inicio--------------------------//
 // Endpoint para buscar todos os administradores
 app.get('/api/listaradmins', (req, res) => {
-  const sqlSelect = "SELECT * FROM admin";
+  const sqlSelect = "SELECT * FROM admin WHERE id != 1";
   connection.query(sqlSelect, (err, result) => {
       if (err) {
           console.error(err);
@@ -329,6 +329,10 @@ app.put('/api/updateadmin', async (req, res) => {
 
   if (!id || !username || !password) {
       return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+
+  if (id === 1) {
+      return res.status(403).json({ message: 'Não é permitido atualizar o administrador com ID 1.' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -362,11 +366,12 @@ app.put('/api/updateuser', async (req, res) => {
       res.status(200).json({ message: 'Usuário atualizado com sucesso.' });
   });
 });
+
 // Rota para servir a página HTML de atualização de usuários
 app.get('/updateUser', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/alterarusuario.html'));
 });
-//----------------------- Módulo de Alterar fim--------------------------//
+//----------------------- Módulo para Alterar fim ----------------//
 
 //----------------------- Módulo para Dashboards inicio ----------------//
 //Função para mostrar o ID logado no canto da tela.
