@@ -1,9 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salvar RFID</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .form {
+      width: 30%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="button"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      display: block;
+      margin: 5px auto;
+    }
+
+    input[type="button"] {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    input[type="button"]:hover {
+      background-color: #0056b3;
+    }
+
+    input[type="button"].gray {
+      background-color: #6c757d;
+    }
+
+    input[type="button"].gray:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form">
+    <h1>Salvar UID</h1>
+    <label for="uid">UID Lido:</label>
+    <input type="text" id="uid" readonly>
+    <input type="button" value="Salvar UID" onclick="saveUID()">
+    <input type="button" value="Voltar" id="voltar" class="gray">
+  </div>
   <script>
     async function fetchUID() {
       try {
@@ -26,7 +98,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:3000/api/save', { 
+        const response = await fetch('http://localhost:3000/api/save', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -49,12 +121,11 @@
       fetchUID();
       setInterval(fetchUID, 1000); // Atualização do campo
     });
+
+    // Logica para voltar a pagina anterior ao clicar no voltar
+    document.getElementById('voltar').addEventListener('click', function () {
+      window.history.back();
+    });
   </script>
-</head>
-<body>
-  <h1>Salvar UID</h1>
-  <label for="uid">UID Lido:</label>
-  <input type="text" id="uid" readonly>
-  <button onclick="saveUID()">Salvar UID</button>
 </body>
 </html>

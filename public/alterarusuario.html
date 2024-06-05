@@ -1,32 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atualizar Usuário</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .form {
+            width: 30%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="text"],
+        input[type="password"],
+        select,
+        button,
+        input[type="button"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: block;
+            margin: 5px auto;
+        }
+        button,
+        input[type="button"] {
+            cursor: pointer;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="button"] {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        input[type="button"]:hover {
+            background-color: #5a6268;
+        }
+    </style>
 </head>
 <body>
-    <h1>Atualizar Usuário</h1>
-    <form id="updateUserForm">
-        <label for="userType">Tipo de Usuário:</label>
-        <select id="userType" required>
-            <option value="admin">Administrador</option>
-            <option value="user">Usuário Comum</option>
-        </select>
+    <div class="form">
+        <h1>Atualizar Usuário</h1>
+        <form id="updateUserForm">
+            <label for="userType">Tipo de Usuário:</label>
+            <select id="userType" required>
+                <option value="admin">Administrador</option>
+                <option value="user">Usuário Comum</option>
+            </select>
 
-        <label for="userList">Selecionar Usuário:</label>
-        <select id="userList" required>
-            <!-- Opções serão carregadas dinamicamente -->
-        </select>
+            <label for="userList">Selecionar Usuário:</label>
+            <select id="userList" required>
+                <!-- Opções serão carregadas dinamicamente -->
+            </select>
 
-        <label for="newUsername">Novo Nome de Usuário:</label>
-        <input type="text" id="newUsername" required>
+            <label for="newUsername">Novo Nome de Usuário:</label>
+            <input type="text" id="newUsername" required>
 
-        <label for="newPassword">Nova Senha:</label>
-        <input type="password" id="newPassword" required>
+            <label for="newPassword">Nova Senha:</label>
+            <input type="password" id="newPassword" required>
 
-        <button type="submit">Atualizar</button>
-    </form>
+            <button type="submit">Atualizar</button>
+            <input type="button" value="Voltar" id="voltar">
+        </form>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -80,6 +143,11 @@
 
             // Trigger initial load of users
             userTypeSelect.dispatchEvent(new Event('change'));
+        });
+        
+        // Logica para voltar a pagina anterior ao clicar no voltar
+        document.getElementById('voltar').addEventListener('click', function () {
+            window.history.back();
         });
     </script>
 </body>

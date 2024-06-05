@@ -481,7 +481,7 @@ let lastUID = '';
 
 // Evento disparado quando dados são recebidos pela porta serial
 parser.on('data', (data) => {
-  console.log('Dados recebidos: ', data);
+  console.log('Console Arduíno: ', data);
   let splitData = data.split('UID: ');
   if (splitData.length > 1) {
     lastUID = splitData[1].trim(); // Isso irá armazenar apenas o número do UID, sem o prefixo "UID: "
