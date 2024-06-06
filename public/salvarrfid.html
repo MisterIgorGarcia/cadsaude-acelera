@@ -78,6 +78,13 @@
         background-color: #fff;
       }
     }
+
+    footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -89,6 +96,9 @@
     <input type="button" value="Salvar UID" onclick="saveUID()">
     <input type="button" value="Voltar" id="voltar" class="gray">
   </div>
+  <footer>
+    Aproxime o cartão RFID a ser lido
+  </footer>
   <script>
     async function fetchUID() {
       try {
@@ -113,7 +123,7 @@
     async function saveUID() {
       const uid = document.getElementById('uid').value;
       if (!uid || uid === 'Aproxime o cartão para leitura') {
-        alert('UID não pode estar vazio');
+        alert('UID não pode estar vazio ou ser a mensagem padrão');
         return;
       }
 
