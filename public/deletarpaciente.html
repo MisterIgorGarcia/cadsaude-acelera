@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deletar Paciente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .container {
+      width: 30%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    button {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+      display: block;
+      margin: 5px auto;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #voltar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 5px;
+      width: 80px;
+      background-color: #808080;
+      color: #fff;
+      cursor: pointer;
+    }
+    #voltar:hover {
+      background-color: #606060;
+    }
+    #listaPacientes div {
+      text-align: center; /* Centraliza o conteúdo da div */
+      margin: 10px 0; /* Adiciona uma margem para separar os itens */
+    }
+  </style>
+</head>
+<body>
+
+<input type="button" value="Voltar" id="voltar">
+
+<div class="container">
+  <h2>Deletar Paciente</h2>
+  <div id="listaPacientes"></div>
+</div>
+  <script>
+    // Função para listar pacientes
+    function listarPacientes() {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/api/pacientes');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const pacientes = JSON.parse(xhr.responseText);
+          const lista = document.getElementById('listaPacientes');
+          lista.innerHTML = '';
+          pacientes.forEach(paciente => {
+            const item = document.createElement('div');
+            item.innerHTML = '<span>' + paciente.nome + '</span> <button onclick="deletarPaciente(' + paciente.id + ')">Deletar</button>';
+            lista.appendChild(item);
+          });
+        }
+      };
+      xhr.send();
+    }
+
+    // Função para deletar paciente
+    function deletarPaciente(id) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('DELETE', '/api/paciente/' + id);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          alert('Paciente deletado com sucesso!');
+          listarPacientes();
+        }
+      };
+      xhr.send();
+    }
+    // Inicializar a lista de pacientes
+    listarPacientes();
+    // Recupere o nome de usuário do usuário logado de sessionStorage
+    document.getElementById('voltar').addEventListener('click', function() {
+    window.history.back();
+  });   
+  </script>
+</body>
+</html>

@@ -23,6 +23,7 @@
       padding: 20px;
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
     h2 {
       text-align: center;
@@ -57,14 +58,10 @@
       background-color: #5a6268;
     }
     footer {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      background-color: #f0f0f0;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+      text-align: center;
     }
     #loginTime {
       position: fixed;
@@ -81,15 +78,54 @@
       right: 10px;
       bottom: 10px;
     }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .paciente-info {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      display: none; /* Inicialmente oculto */
+      text-align: left;
+    }
+    .paciente-info h3 {
+      margin-top: 0;
+    }
+    .flash {
+      animation: flash 1.5s ease-in-out;
+    }
+    @keyframes flash {
+      from { background-color: #d4edda; }
+      to { background-color: #fff; }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <h2>Bem-vindo, <span id="userName"></span>!</h2>
-  <button id="CadastrarCartao">Cadastrar Cartão RFID</button>
   <button id="CadastrarPaciente">Cadastrar Paciente</button>
-  <button id="BuscarPaciente">Buscar Paciente</button>
+  <div class="button-container">
+    <button id="ApagarPaciente">Apagar Paciente</button>
+    <button id="AlterarPaciente">Alterar Paciente</button>
+  </div>
+  <div id="pacienteInfo" class="paciente-info">
+    <h3>Informações do Paciente</h3>
+    <p><strong>Nome:</strong> <span id="pacienteNome"></span></p>
+    <p><strong>CPF:</strong> <span id="pacienteCPF"></span></p>
+    <p><strong>Email:</strong> <span id="pacienteEmail"></span></p>
+    <p><strong>Endereço:</strong> <span id="pacienteEndereco"></span></p>
+    <p><strong>Cidade:</strong> <span id="pacienteCidade"></span></p>
+    <p><strong>Estado:</strong> <span id="pacienteEstado"></span></p>
+    <p><strong>UID:</strong> <span id="pacienteUID"></span></p>
+  </div>
+  <div id="leituraRFID" class="paciente-info" style="display: block;">
+    <h3>Aproxime o cartão RFID para leitura</h3>
+  </div>
 </div>
 
 <button id="logout">Deslogar</button>
@@ -98,6 +134,8 @@
 <p id="userAccount">Conta de Funcionário</p>
 
 <p id="userId"></p>
+
+<footer>Aproxime o cartão RFID para leitura</footer>
 
 <script>
   // Extrair o nome do usuário da URL
@@ -109,26 +147,25 @@
 
   // Fazer uma requisição AJAX para obter a ID do usuário
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', '/getUserId?user=' + userName);
+  xhr.open('GET', '/api/paciente/' + userName);
   xhr.onload = function() {
     if (xhr.status === 200) {
       const userId = JSON.parse(xhr.responseText).userId;
-
+      document.getElementById('userId').textContent = 'ID do Usuário: ' + userId;
     }
   };
   xhr.send();
-
-  // Adicionar eventos de clique aos botões
-  document.getElementById('CadastrarCartao').addEventListener('click', function() {
-    window.location.href = '/cadastrocartao.html';
-  });
 
   document.getElementById('CadastrarPaciente').addEventListener('click', function() {
     window.location.href = '/cadastropaciente.html';
   });
 
-  document.getElementById('BuscarPaciente').addEventListener('click', function() {
-    window.location.href = '/buscarpaciente.html';
+  document.getElementById('ApagarPaciente').addEventListener('click', function() {
+    window.location.href = '/deletarpaciente.html';
+  });
+  
+  document.getElementById('AlterarPaciente').addEventListener('click', function() {
+    window.location.href = '/alterarpaciente.html';
   });
 
   document.getElementById('logout').addEventListener('click', function() {
@@ -138,6 +175,55 @@
   // Calcular e exibir o tempo logado
   const loginTime = new Date();
   document.getElementById('loginTime').textContent = 'Logado desde: ' + loginTime.toLocaleTimeString();
+
+  // Função para buscar informações do paciente pelo UID
+  function fetchPacienteInfo(uid) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/paciente/' + uid);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const paciente = JSON.parse(xhr.responseText);
+        document.getElementById('pacienteNome').textContent = paciente.nome;
+        document.getElementById('pacienteCPF').textContent = paciente.cpf;
+        document.getElementById('pacienteEmail').textContent = paciente.email;
+        document.getElementById('pacienteEndereco').textContent = paciente.endereco;
+        document.getElementById('pacienteCidade').textContent = paciente.cidade;
+        document.getElementById('pacienteEstado').textContent = paciente.estado;
+        document.getElementById('pacienteUID').textContent = paciente.uid;
+        const pacienteInfo = document.getElementById('pacienteInfo');
+        pacienteInfo.style.display = 'block';
+        document.getElementById('leituraRFID').style.display = 'none';
+
+        // Adiciona a classe flash para o efeito
+        pacienteInfo.classList.add('flash');
+
+        // Remove a classe flash após 1.5 segundos
+        setTimeout(() => {
+          pacienteInfo.classList.remove('flash');
+        }, 1500);
+      } else {
+        console.error('Erro ao buscar informações do paciente:', xhr.responseText);
+      }
+    };
+    xhr.send();
+  }
+
+  // Periodicamente verificar se há um novo UID lido
+  setInterval(() => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/uid');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const uid = JSON.parse(xhr.responseText).uid;
+        if (uid) {
+          fetchPacienteInfo(uid);
+        }
+      } else {
+        console.error('Erro ao buscar UID:', xhr.responseText);
+      }
+    };
+    xhr.send();
+  }, 500); // Verifica a cada 0.5 segundos
 </script>
 
 </body>

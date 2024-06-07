@@ -61,6 +61,18 @@
     input[type="button"]:hover {
       background-color: #5a6268;
     }
+    .flash {
+      animation: flash 0.5s;
+    }
+    @keyframes flash {
+      from {
+        background-color: #d4edda;
+      }
+      to {
+        background-color: #fff;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -103,12 +115,34 @@
       <option value="SE">Sergipe</option>
       <option value="TO">Tocantins</option>
     </select><br>
+    <label for="uid">UID Lido:</label>
+    <input type="text" id="uid" name="uid" placeholder="Aproxime o cartão para leitura" readonly><br>
     <input type="submit" value="Cadastrar">
     <input type="button" value="Voltar" id="voltar">
   </form>
 </div>
 
 <script>
+  async function fetchUID() {
+    try {
+      const response = await fetch('http://localhost:3000/api/uid');
+      if (!response.ok) {
+        throw new Error('Erro na requisição');
+      }
+      const data = await response.json();
+      const uidField = document.getElementById('uid');
+      if (uidField.value !== data.uid) {
+        uidField.value = data.uid;
+        uidField.classList.add('flash');
+        setTimeout(() => {
+          uidField.classList.remove('flash');
+        }, 500);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar UID:', error);
+    }
+  }
+
   document.getElementById('form-paciente').addEventListener('submit', function(event) {
     event.preventDefault();
     const nome = document.querySelector('input[name="nome"]').value;
@@ -117,7 +151,12 @@
     const endereco = document.querySelector('input[name="endereco"]').value;
     const cidade = document.querySelector('input[name="cidade"]').value;
     const estado = document.querySelector('select[name="estado"]').value;
-    const paciente = { nome, cpf, email, endereco, cidade, estado };
+    const uid = document.querySelector('input[name="uid"]').value;
+    if (!uid || uid === 'Aproxime o cartão para leitura') {
+      alert('UID não pode estar vazio ou ser a mensagem padrão');
+      return;
+    }
+    const paciente = { nome, cpf, email, endereco, cidade, estado, uid };
     fetch('http://localhost:3000/api/paciente', {
       method: 'POST',
       headers: {
@@ -135,10 +174,16 @@
       alert('Erro ao cadastrar paciente: ' + error);
     });
   });
-  // Logica para voltar a pagina anterior ao clicar no voltar
-  document.getElementById('voltar').addEventListener('click', function() {
-    window.history.back();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchUID();
+    setInterval(fetchUID, 1000);
   });
+
+   // Lógica para voltar à página anterior ao clicar no botão voltar
+   document.getElementById('voltar').addEventListener('click', function () {
+      window.history.back();
+    });
 </script>
 </body>
 </html>

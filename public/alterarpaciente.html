@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Paciente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .form {
+            width: 30%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="text"],
+        input[type="email"],
+        select,
+        button,
+        input[type="button"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+            display: block;
+            margin: 5px auto;
+        }
+        button,
+        input[type="button"] {
+            cursor: pointer;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="button"] {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        input[type="button"]:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="form">
+        <h1>Atualizar Paciente</h1>
+        <form id="updatePatientForm">
+            <label for="patientList">Selecionar Paciente para Alteração:</label>
+            <select id="patientList" required>
+                <!-- Opções serão carregadas dinamicamente -->
+            </select>
+            <input type="text" id="newName" required placeholder="Novo Nome" required>
+            <input type="text" id="newCPF" required placeholder="Novo CPF" required>
+            <input type="email" id="newEmail" required placeholder="Novo Email" required>
+            <input type="text" id="newAddress" required placeholder="Novo Endereço" required>
+            <input type="text" id="newCity" required placeholder="Nova Cidade" required>
+            <select id="newState" name="estado">
+                <option value="">Selecione o novo estado</option>
+                <option value="AC">Acre</option>
+                <option value="AL">Alagoas</option>
+                <option value="AP">Amapá</option>
+                <option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="DF">Distrito Federal</option>
+                <option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option>
+                <option value="MA">Maranhão</option>
+                <option value="MT">Mato Grosso</option>
+                <option value="MS">Mato Grosso do Sul</option>
+                <option value="MG">Minas Gerais</option>
+                <option value="PA">Pará</option>
+                <option value="PB">Paraíba</option>
+                <option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option>
+                <option value="RO">Rondônia</option>
+                <option value="RR">Roraima</option>
+                <option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option>
+                <option value="SE">Sergipe</option>
+                <option value="TO">Tocantins</option>
+              </select><br>
+
+            <button type="submit">Atualizar</button>
+            <input type="button" value="Voltar" id="voltar">
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const patientListSelect = document.getElementById('patientList');
+
+            // Carrega a lista de pacientes
+            fetch(`/api/listarPacientes`)
+                .then(response => response.json())
+                .then(data => {
+                    patientListSelect.innerHTML = '';
+                    data.forEach(patient => {
+                        const option = document.createElement('option');
+                        option.value = patient.id;
+                        option.textContent = patient.nome;
+                        patientListSelect.appendChild(option);
+                    });
+                });
+
+            // Submete o formulário para atualizar o paciente
+            document.getElementById('updatePatientForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const patientId = patientListSelect.value;
+                const newName = document.getElementById('newName').value;
+                const newCPF = document.getElementById('newCPF').value;
+                const newEmail = document.getElementById('newEmail').value;
+                const newAddress = document.getElementById('newAddress').value;
+                const newCity = document.getElementById('newCity').value;
+                const newState = document.getElementById('newState').value;
+
+                fetch(`/api/updatePaciente`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: patientId,
+                        nome: newName,
+                        cpf: newCPF,
+                        email: newEmail,
+                        endereco: newAddress,
+                        cidade: newCity,
+                        estado: newState
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar paciente:', error);
+                });
+            });
+
+            // Trigger initial load of patients
+            patientListSelect.dispatchEvent(new Event('change'));
+        });
+        
+        // Logica para voltar a pagina anterior ao clicar no voltar
+        document.getElementById('voltar').addEventListener('click', function () {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>

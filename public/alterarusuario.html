@@ -75,16 +75,12 @@
                 <option value="user">Usuário Comum</option>
             </select>
 
-            <label for="userList">Selecionar Usuário:</label>
+            <label for="userList">Selecionar Usuário para Alteração:</label>
             <select id="userList" required>
                 <!-- Opções serão carregadas dinamicamente -->
             </select>
-
-            <label for="newUsername">Novo Nome de Usuário:</label>
-            <input type="text" id="newUsername" required>
-
-            <label for="newPassword">Nova Senha:</label>
-            <input type="password" id="newPassword" required>
+            <input type="text" id="newUsername" required placeholder="Novo Nome" required>
+            <input type="password" id="newPassword" required placeholder="Nova Senha" required>
 
             <button type="submit">Atualizar</button>
             <input type="button" value="Voltar" id="voltar">

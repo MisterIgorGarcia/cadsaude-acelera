@@ -65,7 +65,6 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false } // Defina como true se estiver em um ambiente de produção com HTTPS
 }));
-//
 
 // Configuração do bodyParser para processar formulários
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -171,7 +170,6 @@ app.get('/dashboarduser', (req, res) => {
   // Renderize o arquivo HTML do dashboard ou envie uma resposta adequada
   res.sendFile(path.join(__dirname, 'public/dashuser.html'));
 });
-
 //----------------------- Módulo de Login fim --------------------------//
 
 //----------------------- Módulo do Cadastro de Usuários inicio--------------------------//
@@ -366,7 +364,6 @@ app.put('/api/updateuser', async (req, res) => {
       res.status(200).json({ message: 'Usuário atualizado com sucesso.' });
   });
 });
-
 // Rota para servir a página HTML de atualização de usuários
 app.get('/updateUser', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/alterarusuario.html'));
@@ -389,7 +386,7 @@ app.get('/getAdminId', function(req, res) {
 
 //Configuração do Gráfico chart.js
 app.get('/grafico', (req, res) => {
-  const tables = ['pacientes', 'users', 'fichas_medicas', 'uid', 'admin'];
+  const tables = ['pacientes', 'users', 'admin'];
   let results = [];
   let completedQueries = 0;
 
@@ -406,65 +403,82 @@ app.get('/grafico', (req, res) => {
     });
   });
 });
-
-// Endpoint para cadastrar dados do formulário de Pacientes
-app.post('/api/paciente', (req, res) => {
-  const { nome, cpf, email, endereco, cidade, estado } = req.body;
-  // Verifique se todos os campos necessários estão presentes
-  if (!nome || !cpf || !email || !endereco || !cidade || !estado) {
-    return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-  }
-  // Verifique se o CPF já está em uso
-  const checkQuery = `SELECT * FROM pacientes WHERE cpf = ?`;
-  connection.query(checkQuery, [cpf], (err, results) => {
+// Endpoint para obter informações do paciente pelo UID
+app.get('/api/paciente/:uid', (req, res) => {
+  const { uid } = req.params;
+  const query = 'SELECT * FROM pacientes WHERE uid = ?';
+  connection.query(query, [uid], (err, results) => {
     if (err) {
-      console.error('Erro ao verificar paciente:', err);
-      return res.status(500).json({ message: 'Erro interno do servidor' });
+      console.error('Erro ao buscar informações do paciente:', err);
+      return res.status(500).send('Erro ao buscar informações do paciente');
     }
     if (results.length > 0) {
-      return res.status(400).json({ message: 'CPF já em uso.' });
+      res.json(results[0]);
+    } else {
+      res.status(404).send('Paciente não encontrado');
     }
-    // Insira o paciente no banco de dados
-    const insertQuery = `INSERT INTO pacientes (nome, cpf, email, endereco, cidade, estado) VALUES (?, ?, ?, ?, ?, ?)`;
-    connection.query(insertQuery, [nome, cpf, email, endereco, cidade, estado], (err, result) => {
-      if (err) {
-        console.error('Erro ao cadastrar paciente:', err);
-        return res.status(500).json({ message: 'Erro interno do servidor' });
-      }
-      console.log(`Paciente ${nome} cadastrado com sucesso.`);
-      res.status(200).json({ message: 'Paciente cadastrado com sucesso.' });
-    });
   });
 });
-
-// Rota e funcionalidade para a tela de buscar pacientes
-app.get('/api/buscarpacientes', (req, res) => {
-  connection.query('SELECT * FROM pacientes', (err, result) => {
+// Rota para listar todos os pacientes
+app.get('/api/pacientes', (req, res) => {
+  const query = 'SELECT * FROM pacientes';
+  connection.query(query, (err, results) => {
     if (err) throw err;
-    res.json(result);
+    res.json(results);
   });
 });
-// Rota para criar uma ficha médica para um paciente
-app.post('/pacientes/:id/fichas_medicas', (req, res) => {
-    const pacienteId = req.params.id;
-    const { cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas } = req.body;
 
-    const query = 'INSERT INTO fichas_medicas (cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    connection.query(query, [cpf, data_emissao, hora_emissao, sintomas, alergias, registros_anteriores, notas_medicas], (err, result) => {
-        if (err) throw err;
-        res.send('Ficha médica criada com sucesso!');
-    });
+// Rota para deletar um paciente
+app.delete('/api/paciente/:id', (req, res) => {
+  const query = 'DELETE FROM pacientes WHERE id = ?';
+  connection.query(query, [req.params.id], (err, result) => {
+    if (err) throw err;
+    res.send('Paciente deletado com sucesso.');
+  });
 });
 
-// Rota para criar um UID
-app.post('/uid', (req, res) => {
-    const { conteudo } = req.body;
+// Rota para alterar informações de um paciente
+app.put('/api/paciente/:id', (req, res) => {
+  const { nome, cpf, email, endereco, cidade, estado, uid } = req.body;
+  const query = 'UPDATE pacientes SET nome = ?, cpf = ?, email = ?, endereco = ?, cidade = ?, estado = ?, uid = ? WHERE id = ?';
+  connection.query(query, [nome, cpf, email, endereco, cidade, estado, uid, req.params.id], (err, result) => {
+    if (err) throw err;
+    res.send('Informações do paciente atualizadas com sucesso.');
+  });
+});
 
-    const query = 'INSERT INTO uid (conteudo) VALUES (?)';
-    connection.query(query, [conteudo], (err, result) => {
-        if (err) throw err;
-        res.send('UID criado com sucesso!');
-    });
+// Endpoint para buscar todos os pacientes
+app.get('/api/listarPacientes', (req, res) => {
+  const sqlSelect = "SELECT * FROM pacientes";
+  connection.query(sqlSelect, (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao buscar os pacientes.' });
+      }
+      res.json(result);
+  });
+});
+
+// Endpoint para atualizar paciente
+app.put('/api/updatePaciente', async (req, res) => {
+  const { id, nome, cpf, email, endereco, cidade, estado } = req.body;
+
+  if (!id || !nome || !cpf || !email || !endereco || !cidade || !estado) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+  const updateQuery = 'UPDATE pacientes SET nome = ?, cpf = ?, email = ?, endereco = ?, cidade = ?, estado = ? WHERE id = ?';
+  connection.query(updateQuery, [nome, cpf, email, endereco, cidade, estado, id], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Erro ao atualizar paciente.' });
+      }
+      res.status(200).json({ message: 'Paciente atualizado com sucesso.' });
+  });
+});
+
+// Rota para servir a página HTML de atualização de pacientes
+app.get('/updatePatient', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/alterarpaciente.html'));
 });
 //--------------------- Módulo para Dashboards fim --------------------//
 
@@ -502,7 +516,41 @@ app.get('/api/uid', (req, res) => {
   }
 });
 
-// Rota para salvar o rfid lido
+
+// Endpoint para receber os dados do paciente
+app.post('/api/paciente', (req, res) => {
+  const { nome, cpf, email, endereco, cidade, estado, uid } = req.body;
+  
+  // Verifique se todos os campos necessários estão presentes
+  if (!nome || !cpf || !email || !endereco || !cidade || !estado || !uid) {
+    return res.status(400).send('Todos os campos são obrigatórios.');
+  }
+
+  // Verifique se o UID já existe
+  const checkQuery = 'SELECT * FROM pacientes WHERE uid = ?';
+  connection.query(checkQuery, [uid], (err, results) => {
+    if (err) {
+      console.error('Erro ao verificar UID:', err);
+      return res.status(500).send('Erro interno do servidor');
+    }
+    if (results.length > 0) {
+      return res.status(400).send('UID já está em uso.');
+    }
+
+    // Insira o paciente no banco de dados
+    const insertQuery = `INSERT INTO pacientes (nome, cpf, email, endereco, cidade, estado, uid) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    connection.query(insertQuery, [nome, cpf, email, endereco, cidade, estado, uid], (err, result) => {
+      if (err) {
+        console.error('Erro ao cadastrar paciente:', err);
+        return res.status(500).send('Erro interno do servidor');
+      }
+      console.log(`Paciente ${nome} cadastrado com sucesso.`);
+      res.status(200).send({ message: 'Paciente cadastrado com sucesso.' });
+    });
+  });
+});
+
+// Endpoint para salvar o UID lido
 app.post('/api/save', (req, res) => {
   const { uid } = req.body;
   if (!uid) {
@@ -515,6 +563,22 @@ app.post('/api/save', (req, res) => {
       return res.status(500).json({ message: 'Erro ao salvar UID' });
     }
     res.status(200).json({ message: 'UID salvo com sucesso' });
+  });
+});
+
+// Endpoint para obter o UID lido pelo RFID
+app.get('/api/uid', (req, res) => {
+  const query = 'SELECT conteudo FROM uid ORDER BY id DESC LIMIT 1';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar UID no banco de dados:', err);
+      return res.status(500).json({ message: 'Erro ao buscar UID' });
+    }
+    if (results.length > 0) {
+      res.json({ uid: results[0].conteudo });
+    } else {
+      res.status(404).json({ message: 'UID não encontrado' });
+    }
   });
 });
 
@@ -540,7 +604,7 @@ const limparTabelas = () => {
   rl.question('Tem certeza que deseja limpar todas as tabelas do banco de dados cadsaude? (sim/nao) ', resposta => {
     if (resposta.toLowerCase() === 'sim') {
       // Lista de tabelas para limpar
-      const tabelasParaLimpar = ['uid', 'admin', 'users', 'pacientes', 'fichas_medicas'];
+      const tabelasParaLimpar = ['admin', 'users', 'pacientes'];
 
       tabelasParaLimpar.forEach(tabela => {
         executarQuery(`TRUNCATE TABLE ${tabela};`, () => console.log(`Tabela ${tabela} limpa com sucesso!`));
