@@ -59,7 +59,6 @@ O Sistema também contém um módulo administrativo onde os administradores pode
 **Sistema Operacional :** Necessita instalar um servidor local MySQL e um Node.js.
 
 **nodeserver.js :**
-
 Para baixa-las digite no terminal ou prompt dentro da pasta root do projeto(pasta onde o nodeserver.js esta localizado):
 *npm install mysql serialport @serialport/parser-readline cors body-parser express express-session bcrypt*
 
