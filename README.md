@@ -3,7 +3,7 @@
   <img src="https://github.com/MisterIgorGarcia/cadsaude-acelera/assets/131496741/0985160d-8f85-4dd7-93cb-4a4e24f63fd4" alt="cadsaude_logo">
 </div>
 
-## Descrição:##
+## Descrição:
 Este projeto se trata de um sistema de gestão de saúde chamado CadSaude, desenvolvido utilizando Node.js e MySQL.
 
 - As linguagens utilizadas foram: HTML e JavaScripts para as telas, Javascript para o servidor Node.js e C++ para o leitor de cartões Arduíno.
@@ -48,13 +48,13 @@ Este projeto se trata de um sistema de gestão de saúde chamado CadSaude, desen
 
   **1 Cabo USB AM/BM:** Para conectar o arduino ao USB do computador ou servidor que irá roda-lo.
 
-## Funcionalidade:##
+## Funcionalidade:
 
 O Sistema é projetado para permanecer na mesa do funcionário da empresa, clinica ou hospital para que ele possa realizar o controle de acesso de pacientes, e o registro deles em cartões RFID.
 
 O Sistema também contém um módulo administrativo onde os administradores podem logar em suas contas e terem uma visão geral do contéudo total do banco de dados e também cadastrar, alterar e remover usuarios existentes no sistema.
 
-## Dependencias:##
+## Dependencias:
 
 **Sistema Operacional :** Necessita instalar um servidor local MySQL e um Node.js.
 
@@ -63,7 +63,7 @@ O Sistema também contém um módulo administrativo onde os administradores pode
 Para baixa-las digite no terminal ou prompt dentro da pasta root do projeto(pasta onde o nodeserver.js esta localizado):
 *npm install mysql serialport @serialport/parser-readline cors body-parser express express-session bcrypt*
 
-### Integrantes do projeto: ### 
+### Integrantes do projeto:
 
 **Igor: Criador do servidor node, telas, interface e banco de dados e também realizei ajustes em geral no projeto.**
 
