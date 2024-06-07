@@ -8,7 +8,7 @@ Este projeto se trata de um sistema de gestão de saúde chamado CadSaude, desen
 - As linguagens utilizadas foram: HTML e JavaScripts para as telas, Javascript para o servidor Node.js e C++ para o leitor de cartões Arduíno.
 
 - No servidor Node.js, utilizamos as seguintes bibliotecas:
-**mysql:** Usado para conectar e interagir com o banco de dados MySQL.
+**mysql:** Usado para conectar e interagir com o banco de dados MySQL.\n
 **SerialPort:** Utilizado para comunicação serial, permitindo a leitura de dados de uma porta serial.
 **@serialport/parser-readline:** Um parser para processar dados recebidos da porta serial em linhas delimitadas.
 **cors:** Uma biblioteca usada para configurar o Cross-Origin Resource Sharing (CORS), permitindo solicitações entre diferentes origens.
