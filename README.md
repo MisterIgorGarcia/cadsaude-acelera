@@ -1,72 +1,73 @@
-<h1 style="text-align: center;">CadSaúde</h1>
-<div style="text-align: center;">
-  <img src="https://github.com/MisterIgorGarcia/cadsaude-acelera/assets/131496741/0985160d-8f85-4dd7-93cb-4a4e24f63fd4" alt="cadsaude_logo">
+# 🏥 CadSaúde
+
+<div align="center">
+
+![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-red?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/MisterIgorGarcia/cadsaude-acelera?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/MisterIgorGarcia/cadsaude-acelera?style=for-the-badge)
+
+**Sistema de gestão de saúde para controle de acesso e registro de pacientes via RFID.**
+
+[📂 Repositório](https://github.com/MisterIgorGarcia/cadsaude-acelera) · [🐛 Reportar um problema](https://github.com/MisterIgorGarcia/cadsaude-acelera/issues)
+
 </div>
 
-## Descrição:
-Este projeto se trata de um sistema de gestão de saúde chamado CadSaude, desenvolvido utilizando Node.js e MySQL.
+---
 
-- As linguagens utilizadas foram: HTML e JavaScripts para as telas, Javascript para o servidor Node.js e C++ para o leitor de cartões Arduíno.
-  
-- No servidor Node.js, utilizamos as seguintes bibliotecas:
-  
-  **mysql:** Usado para conectar e interagir com o banco de dados MySQL.
+## 📖 Sobre o Projeto
 
-  **SerialPort:** Utilizado para comunicação serial, permitindo a leitura de dados de uma porta serial.
+O **CadSaúde** é um sistema de gestão de saúde desenvolvido para clínicas, hospitais ou empresas. O projeto integra software e hardware para realizar o controle de acesso de pacientes e o registro destes em cartões RFID. 
 
-  **@serialport/parser-readline:** Um parser para processar dados recebidos da porta serial em linhas delimitadas.
+O sistema é composto por um servidor **Node.js** integrado a um banco de dados **MySQL**, telas em **HTML e JavaScript**, e um leitor de cartões físico construído com **Arduino (C++)**. O sistema permanece na mesa do funcionário para agilizar o atendimento e o registro de dados.
 
-  **cors:** Uma biblioteca usada para configurar o Cross-Origin Resource Sharing (CORS), permitindo solicitações entre diferentes origens.
+---
 
-  **body-parser:** Utilizado para analisar os corpos das solicitações HTTP e disponibilizar os dados do corpo em req.body.
+## ✨ Funcionalidades
 
-  **path:** Usado para manipular e transformar caminhos de arquivo.
+- **📇 Leitura e Gravação de Cartões RFID:** Registro de pacientes em cartões através do leitor Arduino.
+- **🔐 Módulo Administrativo:** Área restrita para administradores realizarem login seguro.
+- **📊 Visão Geral do Banco de Dados:** Acesso total ao conteúdo do banco de dados pelos administradores.
+- **👥 Gestão de Usuários:** Cadastro, alteração e remoção de usuários do sistema.
+- **🖥️ Interface de Atendimento:** Sistema desktop para controle de acesso de pacientes no dia a dia.
+- **🔌 Integração Hardware-Software:** Comunicação serial entre o leitor físico e o servidor Node.js.
 
-  **express:** Framework web para Node.js, utilizado para criar e configurar o servidor web.
+---
 
-  **express-session:** Middleware de sessão para Express, usado para gerenciar sessões de usuário.
+## 🛠️ Tecnologias Utilizadas
 
-  **crypto:** Biblioteca interna do Node.js utilizada para gerar valores hash e chaves criptográficas.
+| Tecnologia | Descrição |
+|------------|-----------|
+| **HTML5 & JavaScript** | Estruturação das telas e interatividade do cliente. |
+| **Node.js** | Servidor backend responsável pelas regras de negócio e comunicação serial. |
+| **MySQL** | Banco de dados relacional para armazenamento das informações. |
+| **C++ (Arduino)** | Linguagem utilizada no desenvolvimento do leitor de cartões RFID. |
+| **Bibliotecas Node.js** | `mysql`, `serialport`, `cors`, `body-parser`, `express`, `express-session`, `bcrypt`, `crypto`, `readline`, `@serialport/parser-readline`. |
+| **Bibliotecas Arduino** | `MFRC522.h` (Comunicação RFID) e `SPI.h` (Comunicação Serial Peripheral Interface). |
 
-  **bcrypt:** Biblioteca para hashing de senhas, usada para armazenar senhas de forma segura no banco de dados.
+---
 
-  **readline:** Módulo interno do Node.js para leitura de dados de entrada do usuário via linha de comando.
+## 🔌 Detalhes do Hardware (Arduino)
 
-- No Arduino Utilizamos:
-  
-  **MFRC522.h:** Biblioteca para comunicação com o módulo MFRC522.
+O leitor de cartões foi montado utilizando os seguintes componentes:
 
-  **SPI.h:** Biblioteca para comunicação SPI (Serial Peripheral Interface).
+- **1 Arduino Mega 2560:** O sistema principal onde o código é armazenado e executado.
+- **1 Sensor RFID MFRC522:** Responsável pela leitura dos cartões dos pacientes.
+- **1 Protoboard:** Para suportar a ligação dos pinos e o sensor.
+- **1 Cabo USB AM/BM:** Para conectar o Arduino ao computador ou servidor.
+- **7 Pinos de Conexão:** Ligados em: GND, VCC (3.3V), RST (Pino 49), SDA (Pino 53), SCK (Pino 52), MOSI (Pino 51), MISO (Pino 50).
 
-  **1 Sensor de leitura RFID:** Para a leitura dos cartões dos pacientes.
+---
 
-  **7 Pinos de Conecção:** Ligados em: GRD, VCC 3.3 volts, RST ligado ao pino 49, SDA ligado ao pino 53, SCK ligado ao pino 52, MOSI ligado ao pino 51, MISO ligado ao pino 50.
+## 🚀 Como Executar
 
-  **1 Protoboard:** Para suportar a ligação dos pinos e o sensor.
+### Pré-requisitos
+- Sistema Operacional com **Node.js** instalado.
+- Servidor local **MySQL** instalado e configurado.
 
-  **1 Arduino Mega 2560:** O sistema todo onde irá ser armazenado o código e rodar os leitores.
+### Passo a Passo
+1. Clone o repositório para a sua máquina.
+2. Dentro da pasta root do projeto (onde o `nodeserver.js` está localizado), instale as dependências executando o comando abaixo no terminal:
 
-  **1 Cabo USB AM/BM:** Para conectar o arduino ao USB do computador ou servidor que irá roda-lo.
-
-## Funcionalidade:
-
-O Sistema é projetado para permanecer na mesa do funcionário da empresa, clinica ou hospital para que ele possa realizar o controle de acesso de pacientes, e o registro deles em cartões RFID.
-
-O Sistema também contém um módulo administrativo onde os administradores podem logar em suas contas e terem uma visão geral do contéudo total do banco de dados e também cadastrar, alterar e remover usuarios existentes no sistema.
-
-## Dependencias:
-
-**Sistema Operacional :** Necessita instalar um servidor local MySQL e um Node.js.
-
-**nodeserver.js :**
-Para baixa-las digite no terminal ou prompt dentro da pasta root do projeto(pasta onde o nodeserver.js esta localizado):
-
-*npm install mysql serialport @serialport/parser-readline cors body-parser express express-session bcrypt*
-
-### Integrantes do projeto:
-
-**Igor: Criador do servidor node, telas, interface e banco de dados e também realizei ajustes em geral no projeto.**
-
-**Matheus : Criador da Documentação e o logotipo do projeto.**
-
-**Amaury: Desenvolvedor do código arduino.**
+```bash
+npm install mysql serialport @serialport/parser-readline cors body-parser express express-session bcrypt
