@@ -1,4 +1,4 @@
-<div align ='center'># 🏥 CadSaúde</div>
+<h1 align ='center'># 🏥 CadSaúde</div>
 
 <div align="center">
 
